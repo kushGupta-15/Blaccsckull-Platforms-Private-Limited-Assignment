@@ -6,8 +6,19 @@ This file tracks the current state of the project. Update it as tasks are comple
 
 ## Current Status
 
-**Phase:** Phase 7 complete — ready to begin Phase 8 (Documentation & Submission)
+**Phase:** Phase 8 complete (T8.2 + T8.3 require manual action)
 **Last Updated:** 2026-09-23
+
+---
+
+## Completed Tasks
+
+- [x] All phases 1–7 complete
+### Phase 8 — Documentation & Submission ✅ (automatable parts)
+- [x] T8.1 — `README.md` written with full setup instructions, env vars, assumptions, decisions, trade-offs, and future improvements
+- [ ] T8.2 — **Manual:** Record screen demo (`npx expo start` → login → list → details → register → withdraw)
+- [ ] T8.3 — **Manual:** Push to GitHub (`git init && git add . && git commit && git push`)
+- [x] T8.4 — Final review: 38/38 submission checks passed ✅
 
 ---
 

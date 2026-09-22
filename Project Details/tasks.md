@@ -158,7 +158,7 @@ All tasks are organized by phase. Each task should be completed and verified bef
 
 ## Phase 8 — Documentation & Submission
 
-- [ ] **T8.1** Write `README.md`
+- [x] **T8.1** Write `README.md`
   - Setup instructions (backend + frontend)
   - Environment variables list
   - Assumptions made
@@ -166,8 +166,11 @@ All tasks are organized by phase. Each task should be completed and verified bef
   - Trade-offs
   - Future improvements
 - [ ] **T8.2** Record screen demo video (working registration flow, state changes)
+  - Run `npx expo start`, open on simulator, record: login → list → tap card → register → see status change → withdraw
 - [ ] **T8.3** Push final code to GitHub repository
-- [ ] **T8.4** Final review of all submission requirements
+  - `git init` → `git add .` → commit → push to new GitHub repo
+  - Ensure `.env` is NOT committed (covered by .gitignore)
+- [x] **T8.4** Final review of all submission requirements — 38/38 checks passed ✅
 
 ---
 
