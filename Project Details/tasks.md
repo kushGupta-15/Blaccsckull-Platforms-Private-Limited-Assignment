@@ -8,24 +8,25 @@ All tasks are organized by phase. Each task should be completed and verified bef
 
 ## Phase 1 — Project Setup & Infrastructure
 
-- [ ] **T1.1** Initialize backend project (Node.js + Express + TypeScript)
+- [x] **T1.1** Initialize backend project (Node.js + Express + TypeScript)
   - `npm init`, tsconfig, eslint, prettier
   - Install all backend dependencies
-- [ ] **T1.2** Initialize frontend project (Expo + React Native + TypeScript)
-  - `npx create-expo-app`, configure tsconfig, eslint, prettier
-  - Install all frontend dependencies
-- [ ] **T1.3** Setup MongoDB connection
+- [x] **T1.2** Initialize frontend project (Expo + React Native + TypeScript)
+  - Manually scaffolded (create-expo-app CLI timed out), full folder structure created
+  - Configure tsconfig, eslint, babel — install all frontend dependencies
+- [x] **T1.3** Setup MongoDB connection
   - Configure Mongoose in `/config/database.ts`
   - Connect using env variable `MONGODB_URI`
-- [ ] **T1.4** Setup environment config
-  - Create `.env` and `.env.example` for backend
-  - Configure Expo Constants for frontend env
-- [ ] **T1.5** Create base Express app with middleware
-  - helmet, cors, morgan, express.json
-  - Global error handler middleware
-- [ ] **T1.6** Setup React Navigation
-  - Stack navigator with placeholder screens
-  - Navigation types for TypeScript
+- [x] **T1.4** Setup environment config
+  - Created `.env` and `.env.example` for backend
+  - Configured Expo Constants for frontend env via `app.json extra`
+- [x] **T1.5** Create base Express app with middleware
+  - helmet, cors, morgan, express.json, body size limit
+  - Global error handler + 404 handler middleware
+  - `/api/v1/health` check endpoint
+- [x] **T1.6** Setup React Navigation
+  - Stack navigator with placeholder screens (Login, CompetitionsList, CompetitionDetails)
+  - Full navigation types for TypeScript (`RootStackParamList`)
 
 ---
 
