@@ -62,31 +62,30 @@ All tasks are organized by phase. Each task should be completed and verified bef
 
 ## Phase 4 — Competition Backend
 
-- [ ] **T4.1** Create `Competition` Mongoose model with full schema
+- [x] **T4.1** Create `Competition` Mongoose model with full schema
   - Include indexes on `status`, `startDate`, `endDate`
-- [ ] **T4.2** Create `Registration` Mongoose model
+- [x] **T4.2** Create `Registration` Mongoose model
   - Compound unique index on `{ userId, competitionId }`
-- [ ] **T4.3** Implement `GET /api/v1/competitions` (list, paginated)
+- [x] **T4.3** Implement `GET /api/v1/competitions` (list, paginated)
   - Filter by status, search by title
-- [ ] **T4.4** Implement `GET /api/v1/competitions/:id` (single competition)
+- [x] **T4.4** Implement `GET /api/v1/competitions/:id` (single competition)
   - Populate host info
   - Include `userRegistrationStatus` when auth token provided
-- [ ] **T4.5** Implement `POST /api/v1/competitions/:id/register`
+- [x] **T4.5** Implement `POST /api/v1/competitions/:id/register`
   - Auth required
   - Check competition status (must be `active`)
   - Atomic spot decrement using `findOneAndUpdate` with condition
   - Prevent duplicate registration (unique index + 409 response)
   - Handle race condition: return 409 if spots run out
-- [ ] **T4.6** Implement `DELETE /api/v1/competitions/:id/register` (withdraw)
+- [x] **T4.6** Implement `DELETE /api/v1/competitions/:id/register` (withdraw)
   - Auth required
   - Atomic spot increment on withdrawal
-- [ ] **T4.7** Implement `GET /api/v1/competitions/:id/participants`
+- [x] **T4.7** Implement `GET /api/v1/competitions/:id/participants`
   - Paginated list of registered users
-- [ ] **T4.8** Seed database with sample competition data
+- [x] **T4.8** Seed database with sample competition data
   - At least 3 competitions in different states (upcoming, active, ended)
-- [ ] **T4.9** Competition status auto-update logic
-  - Service/cron that transitions `upcoming → active → ended` based on dates
-  - OR compute status dynamically at query time
+- [x] **T4.9** Competition status auto-update logic
+  - Computed dynamically via virtual field at query time (no stale data)
 
 ---
 

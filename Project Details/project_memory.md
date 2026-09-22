@@ -6,29 +6,26 @@ This file tracks the current state of the project. Update it as tasks are comple
 
 ## Current Status
 
-**Phase:** Phase 3 complete — ready to begin Phase 4 (Competition Backend)
+**Phase:** Phase 4 complete — ready to begin Phase 5 (Competition Details Screen)
 **Last Updated:** 2026-09-22
 
 ---
 
 ## Completed Tasks
 
-- [x] Planning documents (prd, architecture, rules, design, tasks, memory)
+- [x] Planning documents
+### Phase 1 ✅ | Phase 2 ✅ | Phase 3 ✅
 
-### Phase 1 ✅
-- [x] T1.1 — T1.6 (full backend + frontend scaffold, MongoDB Atlas connected)
-
-### Phase 2 ✅
-- [x] T2.1 — T2.5 (User model, register, login, /me, JWT middleware)
-
-### Phase 3 — Authentication Frontend ✅
-- [x] T3.1 — Zustand `authStore` with `setAuth`, `logout`, `restoreSession` (done in Phase 1)
-- [x] T3.2 — `LoginScreen` — email/password form, client-side validation, error alerts, gradient button
-- [x] T3.3 — `RegisterScreen` — name/email/password/confirm form, focus chain via refs, all validations
-- [x] T3.4 — Both screens wired to `/api/v1/auth/register` and `/api/v1/auth/login`
-- [x] T3.5 — JWT persisted via `expo-secure-store` in `authStore.setAuth()`
-- [x] T3.6 — `App.tsx` calls `restoreSession()` on mount; spinner shown while loading
-- [x] T3.7 — Auth-gated navigator: unauthenticated → Login/Register stack; Axios 401 interceptor triggers auto-logout
+### Phase 4 — Competition Backend ✅
+- [x] T4.1 — `Competition` model with `computedStatus` virtual (derived from dates + capacity, never stale)
+- [x] T4.2 — `Registration` model with compound unique index `{ userId, competitionId }`
+- [x] T4.3 — `GET /competitions` — paginated, status filter, text search
+- [x] T4.4 — `GET /competitions/:id` — populated host, injects `userRegistrationStatus` when authed
+- [x] T4.5 — `POST /competitions/:id/register` — atomic `findOneAndUpdate` spot decrement, duplicate + race condition safe
+- [x] T4.6 — `DELETE /competitions/:id/register` — atomic counter increment on withdrawal
+- [x] T4.7 — `GET /competitions/:id/participants` — paginated active registrations
+- [x] T4.8 — 4 seed competitions (upcoming, active, ended, full) auto-seeded on first boot
+- [x] T4.9 — Status computed dynamically via Mongoose virtual (no cron needed)
 
 ---
 

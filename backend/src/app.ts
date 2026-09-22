@@ -7,7 +7,9 @@ import morgan from 'morgan';
 import connectDB from './config/database';
 import indexRouter from './routes/index';
 import authRouter from './routes/auth';
+import competitionsRouter from './routes/competitions';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
+import { seedCompetitions, getOrCreateSeedHost } from './services/competitionService';
 
 const app: Application = express();
 const PORT = process.env.PORT ?? 5000;
@@ -42,6 +44,7 @@ if (process.env.NODE_ENV !== 'test') {
 // ── Routes ─────────────────────────────────────────────────────────────────────
 app.use('/api/v1', indexRouter);
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/competitions', competitionsRouter);
 
 // ── 404 & Error Handlers ───────────────────────────────────────────────────────
 app.use(notFoundHandler);
@@ -50,6 +53,10 @@ app.use(errorHandler);
 // ── Start Server ───────────────────────────────────────────────────────────────
 const startServer = async (): Promise<void> => {
   await connectDB();
+
+  // Auto-seed on first boot (skips if data already exists)
+  const hostId = await getOrCreateSeedHost();
+  await seedCompetitions(hostId);
 
   app.listen(PORT, () => {
     console.info(`Server running on port ${PORT} [${process.env.NODE_ENV ?? 'development'}]`);
