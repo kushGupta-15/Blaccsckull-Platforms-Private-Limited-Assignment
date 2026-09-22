@@ -6,27 +6,24 @@ This file tracks the current state of the project. Update it as tasks are comple
 
 ## Current Status
 
-**Phase:** Phase 1 complete — ready to begin Phase 2 (Auth Backend)
+**Phase:** Phase 2 complete — ready to begin Phase 3 (Auth Frontend)
 **Last Updated:** 2026-09-22
 
 ---
 
 ## Completed Tasks
 
-- [x] `prd.md` — Product requirements defined
-- [x] `architecture.md` — System architecture and tech stack defined
-- [x] `rules.md` — Coding standards and principles documented
-- [x] `design.md` — UI design system documented
-- [x] `tasks.md` — Full task breakdown created
-- [x] `project_memory.md` — This file created
+- [x] Planning documents (prd, architecture, rules, design, tasks, memory)
 
-### Phase 1 — Project Setup & Infrastructure ✅
-- [x] T1.1 — Backend project initialized (Node.js + Express + TypeScript, strict mode)
-- [x] T1.2 — Frontend project initialized (Expo + React Native + TypeScript, manually scaffolded)
-- [x] T1.3 — MongoDB connection config (`/backend/src/config/database.ts`)
-- [x] T1.4 — `.env` + `.env.example` for backend; `app.json extra` for frontend env
-- [x] T1.5 — Express app with helmet, cors, morgan, json parsing, error handler, 404 handler, `/api/v1/health`
-- [x] T1.6 — React Navigation stack with typed `RootStackParamList`, placeholder screens, auth-gated routing
+### Phase 1 ✅
+- [x] T1.1 — T1.6 (full backend + frontend scaffold, MongoDB Atlas connected)
+
+### Phase 2 — Authentication Backend ✅
+- [x] T2.1 — `User` Mongoose model (`name`, `email`, `passwordHash`, `avatar`), `passwordHash` excluded from all queries by default, `comparePassword()` instance method
+- [x] T2.2 — `POST /api/v1/auth/register` — validates name/email/password, bcrypt hash (12 rounds), returns JWT + user (no hash)
+- [x] T2.3 — `POST /api/v1/auth/login` — validates credentials, generic error message (prevents user enumeration), returns JWT
+- [x] T2.4 — `GET /api/v1/auth/me` — protected, returns current user profile
+- [x] T2.5 — `protect` + `optionalAuth` JWT middleware (already in Phase 1, fully wired)
 
 ---
 

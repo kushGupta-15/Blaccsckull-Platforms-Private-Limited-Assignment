@@ -6,6 +6,7 @@ import morgan from 'morgan';
 
 import connectDB from './config/database';
 import indexRouter from './routes/index';
+import authRouter from './routes/auth';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 
 const app: Application = express();
@@ -40,6 +41,7 @@ if (process.env.NODE_ENV !== 'test') {
 
 // ── Routes ─────────────────────────────────────────────────────────────────────
 app.use('/api/v1', indexRouter);
+app.use('/api/v1/auth', authRouter);
 
 // ── 404 & Error Handlers ───────────────────────────────────────────────────────
 app.use(notFoundHandler);

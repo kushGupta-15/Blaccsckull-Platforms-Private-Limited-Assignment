@@ -32,17 +32,17 @@ All tasks are organized by phase. Each task should be completed and verified bef
 
 ## Phase 2 — Authentication (Backend)
 
-- [ ] **T2.1** Create `User` Mongoose model with schema
-- [ ] **T2.2** Implement `POST /api/v1/auth/register` endpoint
+- [x] **T2.1** Create `User` Mongoose model with schema
+- [x] **T2.2** Implement `POST /api/v1/auth/register` endpoint
   - Validate input (name, email, password)
   - Hash password with bcrypt
   - Return JWT token
-- [ ] **T2.3** Implement `POST /api/v1/auth/login` endpoint
+- [x] **T2.3** Implement `POST /api/v1/auth/login` endpoint
   - Validate credentials
   - Return JWT token
-- [ ] **T2.4** Implement `GET /api/v1/auth/me` endpoint
+- [x] **T2.4** Implement `GET /api/v1/auth/me` endpoint
   - Decode JWT, return user profile (no password hash)
-- [ ] **T2.5** Create JWT auth middleware
+- [x] **T2.5** Create JWT auth middleware
   - Verify token, attach user to `req.user`
   - Return 401 if invalid/missing
 
