@@ -7,8 +7,8 @@ import { RootStackParamList } from '../types';
 import { COLORS } from '../utils/constants';
 import { useAuthStore } from '../store/authStore';
 
-// Placeholder screens — to be replaced in later phases
 import LoginScreen from '../screens/LoginScreen';
+import RegisterScreen from '../screens/RegisterScreen';
 import CompetitionsListScreen from '../screens/CompetitionsListScreen';
 import CompetitionDetailsScreen from '../screens/CompetitionDetails/CompetitionDetailsScreen';
 
@@ -17,6 +17,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 const AppNavigator: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuthStore();
 
+  // Show spinner while restoring session from SecureStore
   if (isLoading) {
     return (
       <View
@@ -42,6 +43,7 @@ const AppNavigator: React.FC = () => {
         }}
       >
         {isAuthenticated ? (
+          // ── Authenticated stack ─────────────────────────────────────────────
           <>
             <Stack.Screen
               name="CompetitionsList"
@@ -53,8 +55,10 @@ const AppNavigator: React.FC = () => {
             />
           </>
         ) : (
+          // ── Unauthenticated stack ───────────────────────────────────────────
           <>
             <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Register" component={RegisterScreen} />
           </>
         )}
       </Stack.Navigator>

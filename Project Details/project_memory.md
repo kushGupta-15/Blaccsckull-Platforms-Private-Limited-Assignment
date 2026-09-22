@@ -6,7 +6,7 @@ This file tracks the current state of the project. Update it as tasks are comple
 
 ## Current Status
 
-**Phase:** Phase 2 complete — ready to begin Phase 3 (Auth Frontend)
+**Phase:** Phase 3 complete — ready to begin Phase 4 (Competition Backend)
 **Last Updated:** 2026-09-22
 
 ---
@@ -18,12 +18,17 @@ This file tracks the current state of the project. Update it as tasks are comple
 ### Phase 1 ✅
 - [x] T1.1 — T1.6 (full backend + frontend scaffold, MongoDB Atlas connected)
 
-### Phase 2 — Authentication Backend ✅
-- [x] T2.1 — `User` Mongoose model (`name`, `email`, `passwordHash`, `avatar`), `passwordHash` excluded from all queries by default, `comparePassword()` instance method
-- [x] T2.2 — `POST /api/v1/auth/register` — validates name/email/password, bcrypt hash (12 rounds), returns JWT + user (no hash)
-- [x] T2.3 — `POST /api/v1/auth/login` — validates credentials, generic error message (prevents user enumeration), returns JWT
-- [x] T2.4 — `GET /api/v1/auth/me` — protected, returns current user profile
-- [x] T2.5 — `protect` + `optionalAuth` JWT middleware (already in Phase 1, fully wired)
+### Phase 2 ✅
+- [x] T2.1 — T2.5 (User model, register, login, /me, JWT middleware)
+
+### Phase 3 — Authentication Frontend ✅
+- [x] T3.1 — Zustand `authStore` with `setAuth`, `logout`, `restoreSession` (done in Phase 1)
+- [x] T3.2 — `LoginScreen` — email/password form, client-side validation, error alerts, gradient button
+- [x] T3.3 — `RegisterScreen` — name/email/password/confirm form, focus chain via refs, all validations
+- [x] T3.4 — Both screens wired to `/api/v1/auth/register` and `/api/v1/auth/login`
+- [x] T3.5 — JWT persisted via `expo-secure-store` in `authStore.setAuth()`
+- [x] T3.6 — `App.tsx` calls `restoreSession()` on mount; spinner shown while loading
+- [x] T3.7 — Auth-gated navigator: unauthenticated → Login/Register stack; Axios 401 interceptor triggers auto-logout
 
 ---
 

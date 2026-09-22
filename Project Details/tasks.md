@@ -50,13 +50,13 @@ All tasks are organized by phase. Each task should be completed and verified bef
 
 ## Phase 3 — Authentication (Frontend)
 
-- [ ] **T3.1** Create auth Zustand store (token, user, login, logout)
-- [ ] **T3.2** Build Login screen UI
-- [ ] **T3.3** Build Register screen UI
-- [ ] **T3.4** Wire auth screens to API (`/api/v1/auth/*`)
-- [ ] **T3.5** Persist JWT token with `expo-secure-store`
-- [ ] **T3.6** Setup auto-login on app launch (restore session from storage)
-- [ ] **T3.7** Protected route logic (redirect to login if unauthenticated on register action)
+- [x] **T3.1** Create auth Zustand store (token, user, login, logout)
+- [x] **T3.2** Build Login screen UI
+- [x] **T3.3** Build Register screen UI
+- [x] **T3.4** Wire auth screens to API (`/api/v1/auth/*`)
+- [x] **T3.5** Persist JWT token with `expo-secure-store`
+- [x] **T3.6** Setup auto-login on app launch (restore session from storage)
+- [x] **T3.7** Protected route logic (redirect to login if unauthenticated on register action)
 
 ---
 

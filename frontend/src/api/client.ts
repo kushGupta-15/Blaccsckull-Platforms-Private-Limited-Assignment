@@ -1,6 +1,7 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { API_BASE_URL, SECURE_STORE_KEYS } from '../utils/constants';
+import { useAuthStore } from '../store/authStore';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -24,11 +25,16 @@ apiClient.interceptors.request.use(
   (error: AxiosError) => Promise.reject(error)
 );
 
-// ── Response interceptor — normalize errors ───────────────────────────────────
+// ── Response interceptor — auto-logout on 401 (expired/invalid token) ────────
 apiClient.interceptors.response.use(
   (response) => response,
-  (error: AxiosError) => {
-    // 401 handling (token expired/invalid) will be handled in the auth store
+  async (error: AxiosError) => {
+    if (error.response?.status === 401) {
+      // Clear stored credentials so the navigator re-renders to the auth stack
+      await SecureStore.deleteItemAsync(SECURE_STORE_KEYS.AUTH_TOKEN);
+      await SecureStore.deleteItemAsync(SECURE_STORE_KEYS.USER_DATA);
+      useAuthStore.getState().logout().catch(() => undefined);
+    }
     return Promise.reject(error);
   }
 );

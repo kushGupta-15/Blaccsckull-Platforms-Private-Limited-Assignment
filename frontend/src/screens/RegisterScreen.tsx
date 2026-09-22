@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -8,60 +8,93 @@ import {
   ScrollView,
   Platform,
   Alert,
+  TextInput,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AxiosError } from 'axios';
 
 import { RootStackParamList, ApiError } from '../types';
 import { COLORS, FONT_SIZE, SPACING } from '../utils/constants';
-import { loginUser } from '../api/auth';
+import { registerUser } from '../api/auth';
 import { useAuthStore } from '../store/authStore';
 import FormInput from '../components/FormInput';
 import PrimaryButton from '../components/PrimaryButton';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
+type Props = NativeStackScreenProps<RootStackParamList, 'Register'>;
 
 interface FormErrors {
+  name?: string;
   email?: string;
   password?: string;
+  confirmPassword?: string;
 }
 
-const LoginScreen: React.FC<Props> = ({ navigation }) => {
+const RegisterScreen: React.FC<Props> = ({ navigation }) => {
   const setAuth = useAuthStore((s) => s.setAuth);
 
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState<FormErrors>({});
   const [loading, setLoading] = useState(false);
+
+  // Refs for focus management
+  const emailRef = useRef<TextInput>(null);
+  const passwordRef = useRef<TextInput>(null);
+  const confirmRef = useRef<TextInput>(null);
 
   // ── Client-side validation ──────────────────────────────────────────────────
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
+
+    if (!name.trim()) newErrors.name = 'Name is required';
+    else if (name.trim().length < 2) newErrors.name = 'Name must be at least 2 characters';
+
     if (!email.trim()) newErrors.email = 'Email is required';
     else if (!/^\S+@\S+\.\S+$/.test(email)) newErrors.email = 'Enter a valid email';
+
     if (!password) newErrors.password = 'Password is required';
+    else if (password.length < 8) newErrors.password = 'Minimum 8 characters';
+    else if (!/[A-Z]/.test(password)) newErrors.password = 'Must include an uppercase letter';
+    else if (!/[0-9]/.test(password)) newErrors.password = 'Must include a number';
+
+    if (!confirmPassword) newErrors.confirmPassword = 'Please confirm your password';
+    else if (password !== confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   // ── Submit ──────────────────────────────────────────────────────────────────
-  const handleLogin = async (): Promise<void> => {
+  const handleRegister = async (): Promise<void> => {
     if (!validate()) return;
 
     setLoading(true);
     try {
-      const result = await loginUser({ email: email.trim().toLowerCase(), password });
+      const result = await registerUser({
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        password,
+      });
       await setAuth(result.token, result.user);
       // Navigation handled automatically by auth-gated navigator
     } catch (err) {
       const axiosErr = err as AxiosError<ApiError>;
+      const serverDetails = axiosErr.response?.data;
       const message =
-        axiosErr.response?.data?.error ?? 'Login failed. Please try again.';
-      Alert.alert('Login Failed', message);
+        serverDetails && !serverDetails.success && serverDetails.details?.length
+          ? serverDetails.details.join('\n')
+          : (axiosErr.response?.data as ApiError | undefined)?.error ??
+            'Registration failed. Please try again.';
+      Alert.alert('Registration Failed', message);
     } finally {
       setLoading(false);
     }
   };
+
+  const clearError = (field: keyof FormErrors) =>
+    setErrors((e) => ({ ...e, [field]: undefined }));
 
   return (
     <KeyboardAvoidingView
@@ -78,46 +111,69 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
           <Text style={styles.logo} accessibilityRole="header">
             Feedants
           </Text>
-          <Text style={styles.tagline}>Welcome back 👋</Text>
-          <Text style={styles.subtitle}>Sign in to your account</Text>
+          <Text style={styles.tagline}>Create an account 🚀</Text>
+          <Text style={styles.subtitle}>Join competitions today</Text>
         </View>
 
         {/* Form */}
         <View style={styles.form}>
           <FormInput
+            label="Full Name"
+            value={name}
+            onChangeText={(v) => { setName(v); clearError('name'); }}
+            error={errors.name}
+            autoCapitalize="words"
+            autoComplete="name"
+            placeholder="Kush Gupta"
+            returnKeyType="next"
+            onSubmitEditing={() => emailRef.current?.focus()}
+            accessibilityLabel="Full name"
+          />
+
+          <FormInput
             label="Email"
             value={email}
-            onChangeText={(v) => {
-              setEmail(v);
-              if (errors.email) setErrors((e) => ({ ...e, email: undefined }));
-            }}
+            onChangeText={(v) => { setEmail(v); clearError('email'); }}
             error={errors.email}
             keyboardType="email-address"
             autoCapitalize="none"
             autoComplete="email"
             placeholder="you@example.com"
             returnKeyType="next"
+            onSubmitEditing={() => passwordRef.current?.focus()}
+            ref={emailRef}
             accessibilityLabel="Email address"
           />
 
           <FormInput
             label="Password"
             value={password}
-            onChangeText={(v) => {
-              setPassword(v);
-              if (errors.password) setErrors((e) => ({ ...e, password: undefined }));
-            }}
+            onChangeText={(v) => { setPassword(v); clearError('password'); }}
             error={errors.password}
             isPassword
-            placeholder="Your password"
-            returnKeyType="done"
-            onSubmitEditing={handleLogin}
+            placeholder="Min 8 chars, 1 uppercase, 1 number"
+            returnKeyType="next"
+            onSubmitEditing={() => confirmRef.current?.focus()}
+            ref={passwordRef}
             accessibilityLabel="Password"
           />
 
+          <FormInput
+            label="Confirm Password"
+            value={confirmPassword}
+            onChangeText={(v) => { setConfirmPassword(v); clearError('confirmPassword'); }}
+            error={errors.confirmPassword}
+            isPassword
+            placeholder="Repeat your password"
+            returnKeyType="done"
+            onSubmitEditing={handleRegister}
+            ref={confirmRef}
+            accessibilityLabel="Confirm password"
+          />
+
           <PrimaryButton
-            label="Sign In"
-            onPress={handleLogin}
+            label="Create Account"
+            onPress={handleRegister}
             loading={loading}
             style={styles.btn}
           />
@@ -125,13 +181,13 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
         {/* Footer */}
         <View style={styles.footer}>
-          <Text style={styles.footerText}>Don't have an account? </Text>
+          <Text style={styles.footerText}>Already have an account? </Text>
           <TouchableOpacity
-            onPress={() => navigation.navigate('Register')}
+            onPress={() => navigation.navigate('Login')}
             accessibilityRole="link"
-            accessibilityLabel="Go to Register"
+            accessibilityLabel="Go to Login"
           >
-            <Text style={styles.footerLink}>Sign Up</Text>
+            <Text style={styles.footerLink}>Sign In</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -194,4 +250,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginScreen;
+export default RegisterScreen;
