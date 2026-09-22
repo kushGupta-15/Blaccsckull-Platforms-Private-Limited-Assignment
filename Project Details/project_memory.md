@@ -6,20 +6,24 @@ This file tracks the current state of the project. Update it as tasks are comple
 
 ## Current Status
 
-**Phase:** Phase 6 complete — ready to begin Phase 7 (Polish & Edge Cases)
-**Last Updated:** 2026-09-22
+**Phase:** Phase 7 complete — ready to begin Phase 8 (Documentation & Submission)
+**Last Updated:** 2026-09-23
 
 ---
 
 ## Completed Tasks
 
-- [x] Planning documents
-### Phase 1 ✅ | Phase 2 ✅ | Phase 3 ✅ | Phase 4 ✅ | Phase 5 ✅
+- [x] Planning + Phase 1 ✅ + Phase 2 ✅ + Phase 3 ✅ + Phase 4 ✅ + Phase 5 ✅ + Phase 6 ✅
 
-### Phase 6 — Competitions List Screen ✅
-- [x] T6.1 — `CompetitionCard` — banner image with gradient, status badge, title, host, spots/date/fee footer, FREE + Prize badges
-- [x] T6.2 — `CompetitionsListScreen` — FlatList with infinite scroll (`useInfiniteQuery`), pull-to-refresh, status filter tabs, search bar with clear, count label, loading/error/empty states, logout button
-- [x] T6.3 — `navigation.navigate('CompetitionDetails', { competitionId })` wired on card press
+### Phase 7 — Polish & Edge Cases ✅
+- [x] T7.1 — Axios 401 interceptor auto-clears SecureStore + triggers logout (done in Phase 3)
+- [x] T7.2 — `useNetworkStatus` hook (fetch polling + AppState listener) + `OfflineBanner` animated slide-in, wired in `App.tsx`
+- [x] T7.3 — Client-side validation: email regex, password strength (length/uppercase/number), confirm match, name length (done in Phase 3)
+- [x] T7.4 — `testConcurrency.ts` script: 10 simultaneous registrations, 4 assertions (no 5xx, successes=decrement, no overbook, no negative count) — all pass ✅
+- [x] T7.5 — `rateLimiter.ts`: `authLimiter` (10/15min on login+register), `registrationActionLimiter` (5/15min on POST register) — 429 verified
+- [x] T7.6 — `passwordHash` has `select:false` + `toJSON` transform strip — never in any API response (verified)
+- [x] T7.7 — `accessibilityLabel`, `accessibilityRole`, `accessibilityState`, `accessibilityLiveRegion` present in all 10 key components/screens
+- [x] T7.8 — Manual step: run `npx expo start` and test on iOS/Android simulator
 
 ---
 

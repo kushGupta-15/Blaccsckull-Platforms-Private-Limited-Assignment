@@ -145,14 +145,14 @@ All tasks are organized by phase. Each task should be completed and verified bef
 
 ## Phase 7 — Polish & Edge Cases
 
-- [ ] **T7.1** Handle token expiry — auto logout on 401 response (Axios interceptor)
-- [ ] **T7.2** Offline / no network state handling
-- [ ] **T7.3** Validate all form inputs client-side
-- [ ] **T7.4** Test concurrent registration scenario (manual or automated)
-- [ ] **T7.5** Add rate limiting to registration endpoint (prevent spam)
-- [ ] **T7.6** Ensure no sensitive data (password hash) in any API response
-- [ ] **T7.7** Review and fix accessibility (labels, contrast, touch targets)
-- [ ] **T7.8** Test on both iOS and Android simulators
+- [x] **T7.1** Handle token expiry — auto logout on 401 response (Axios interceptor)
+- [x] **T7.2** Offline / no network state handling
+- [x] **T7.3** Validate all form inputs client-side
+- [x] **T7.4** Test concurrent registration scenario (manual or automated)
+- [x] **T7.5** Add rate limiting to registration endpoint (prevent spam)
+- [x] **T7.6** Ensure no sensitive data (password hash) in any API response
+- [x] **T7.7** Review and fix accessibility (labels, contrast, touch targets)
+- [x] **T7.8** Test on both iOS and Android simulators
 
 ---
 
