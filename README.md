@@ -6,12 +6,6 @@ A production-grade full-stack mobile application featuring a Competition Details
 
 ---
 
-## Demo
-
-> Record a short screen demo showing: login → competitions list → open a competition → register → see status change → withdraw.
-
----
-
 ## Tech Stack
 
 | Layer | Technology |
