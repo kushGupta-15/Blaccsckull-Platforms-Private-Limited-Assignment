@@ -8,6 +8,7 @@ import connectDB from './config/database';
 import indexRouter from './routes/index';
 import authRouter from './routes/auth';
 import competitionsRouter from './routes/competitions';
+import usersRouter from './routes/users';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { seedCompetitions, getOrCreateSeedHost } from './services/competitionService';
 
@@ -45,6 +46,7 @@ if (process.env.NODE_ENV !== 'test') {
 app.use('/api/v1', indexRouter);
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/competitions', competitionsRouter);
+app.use('/api/v1/users', usersRouter);
 
 // ── 404 & Error Handlers ───────────────────────────────────────────────────────
 app.use(notFoundHandler);

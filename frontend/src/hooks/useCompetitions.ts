@@ -1,11 +1,13 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
-import { fetchCompetitions } from '../api/competitions';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { fetchCompetitions, fetchMyRegistrations } from '../api/competitions';
 import { ICompetition } from '../types';
 
 const PAGE_SIZE = 10;
 
 export const competitionsListKey = (status?: string, search?: string) =>
   ['competitions', { status, search }] as const;
+
+export const myRegistrationsKey = () => ['competitions', 'my-registrations'] as const;
 
 export const useCompetitions = (status?: string, search?: string) =>
   useInfiniteQuery({
@@ -17,6 +19,14 @@ export const useCompetitions = (status?: string, search?: string) =>
       const { page, totalPages } = lastPage;
       return page < totalPages ? page + 1 : undefined;
     },
+    staleTime: 1000 * 30,
+    refetchOnWindowFocus: true,
+  });
+
+export const useMyRegistrations = () =>
+  useQuery({
+    queryKey: myRegistrationsKey(),
+    queryFn: () => fetchMyRegistrations({ limit: 100 }),
     staleTime: 1000 * 30,
     refetchOnWindowFocus: true,
   });

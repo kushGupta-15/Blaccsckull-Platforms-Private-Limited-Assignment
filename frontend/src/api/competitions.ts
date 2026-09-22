@@ -58,3 +58,12 @@ export const withdrawFromCompetition = async (
   >(`/competitions/${id}/register`);
   return data.data;
 };
+
+export const fetchMyRegistrations = async (
+  params: { page?: number; limit?: number } = {}
+): Promise<PaginatedResponse<ICompetition>> => {
+  const { data } = await apiClient.get<
+    ApiSuccess<PaginatedResponse<ICompetition>>
+  >('/users/me/registrations', { params });
+  return data.data;
+};

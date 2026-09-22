@@ -34,7 +34,7 @@ const AppContent: React.FC = () => {
 
   return (
     <View style={styles.flex}>
-      <StatusBar style="light" backgroundColor="transparent" translucent />
+      <StatusBar style="light" />
       <OfflineBanner isOnline={isOnline} />
       <AppNavigator />
     </View>

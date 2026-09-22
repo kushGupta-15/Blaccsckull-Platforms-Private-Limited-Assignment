@@ -17,16 +17,21 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList, ICompetition, CompetitionStatus } from '../types';
 import { COLORS, FONT_SIZE, SPACING } from '../utils/constants';
 import { useAuthStore } from '../store/authStore';
-import { useCompetitions, flattenCompetitions } from '../hooks/useCompetitions';
+import {
+  useCompetitions,
+  useMyRegistrations,
+  flattenCompetitions,
+} from '../hooks/useCompetitions';
 import CompetitionCard from '../components/CompetitionCard';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CompetitionsList'>;
 
 // ── Filter tabs ───────────────────────────────────────────────────────────────
-type FilterTab = 'all' | CompetitionStatus;
+type FilterTab = 'all' | 'mine' | CompetitionStatus;
 
 const FILTER_TABS: { key: FilterTab; label: string }[] = [
   { key: 'all',      label: 'All' },
+  { key: 'mine',     label: '✅ My Registrations' },
   { key: 'active',   label: '🟢 Active' },
   { key: 'upcoming', label: '🟡 Upcoming' },
   { key: 'ended',    label: '🔴 Ended' },
@@ -36,42 +41,54 @@ const FILTER_TABS: { key: FilterTab; label: string }[] = [
 // ── Screen ────────────────────────────────────────────────────────────────────
 const CompetitionsListScreen: React.FC<Props> = ({ navigation }) => {
   const insets = useSafeAreaInsets();
-  const user    = useAuthStore((s) => s.user);
-  const logout  = useAuthStore((s) => s.logout);
+  const user   = useAuthStore((s) => s.user);
+  const logout = useAuthStore((s) => s.logout);
 
   const [activeFilter, setActiveFilter] = useState<FilterTab>('all');
   const [searchText, setSearchText]     = useState('');
-  const [searchQuery, setSearchQuery]   = useState('');  // debounced submit
+  const [searchQuery, setSearchQuery]   = useState('');
 
   const searchRef = useRef<TextInput>(null);
 
-  const statusParam = activeFilter === 'all' ? undefined : activeFilter;
+  const isMyTab      = activeFilter === 'mine';
+  const statusParam  = (!isMyTab && activeFilter !== 'all') ? activeFilter : undefined;
+
+  // ── Data hooks ────────────────────────────────────────────────────────────
+  const allQuery = useCompetitions(statusParam, searchQuery || undefined);
+  const myQuery  = useMyRegistrations();
+
+  const activeQuery = isMyTab ? null : allQuery;
+
+  const competitions: ICompetition[] = isMyTab
+    ? (myQuery.data?.items ?? [])
+    : (allQuery.data ? flattenCompetitions(allQuery.data.pages) : []);
+
+  const totalCount = isMyTab
+    ? (myQuery.data?.total ?? 0)
+    : (allQuery.data?.pages[0]?.total ?? 0);
+
+  const isLoading    = isMyTab ? myQuery.isLoading  : allQuery.isLoading;
+  const isError      = isMyTab ? myQuery.isError    : allQuery.isError;
+  const isRefetching = isMyTab ? myQuery.isFetching : allQuery.isRefetching;
+
+  const handleRefetch = useCallback(() => {
+    if (isMyTab) void myQuery.refetch();
+    else void allQuery.refetch();
+  }, [isMyTab, myQuery, allQuery]);
 
   const {
-    data,
-    isLoading,
-    isError,
-    refetch,
-    isRefetching,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useCompetitions(statusParam, searchQuery || undefined);
-
-  const competitions = data ? flattenCompetitions(data.pages) : [];
-  const totalCount   = data?.pages[0]?.total ?? 0;
+  } = allQuery;
 
   // ── Handlers ─────────────────────────────────────────────────────────────
   const handleCardPress = useCallback(
-    (competitionId: string) => {
-      navigation.navigate('CompetitionDetails', { competitionId });
-    },
+    (competitionId: string) => navigation.navigate('CompetitionDetails', { competitionId }),
     [navigation]
   );
 
-  const handleSearchSubmit = useCallback(() => {
-    setSearchQuery(searchText.trim());
-  }, [searchText]);
+  const handleSearchSubmit  = useCallback(() => setSearchQuery(searchText.trim()), [searchText]);
 
   const handleSearchClear = useCallback(() => {
     setSearchText('');
@@ -86,51 +103,49 @@ const CompetitionsListScreen: React.FC<Props> = ({ navigation }) => {
   }, []);
 
   const handleLoadMore = useCallback(() => {
-    if (hasNextPage && !isFetchingNextPage) {
-      void fetchNextPage();
-    }
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+    if (!isMyTab && hasNextPage && !isFetchingNextPage) void fetchNextPage();
+  }, [isMyTab, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   // ── Render helpers ────────────────────────────────────────────────────────
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<ICompetition>) => (
-      <CompetitionCard
-        competition={item}
-        onPress={() => handleCardPress(item._id)}
-      />
+      <CompetitionCard competition={item} onPress={() => handleCardPress(item._id)} />
     ),
     [handleCardPress]
   );
 
-  const keyExtractor = useCallback(
-    (item: ICompetition) => item._id,
-    []
-  );
+  const keyExtractor = useCallback((item: ICompetition) => item._id, []);
 
   const renderFooter = useCallback(() => {
-    if (!isFetchingNextPage) return null;
+    if (isMyTab || !isFetchingNextPage) return null;
     return (
       <View style={styles.loadMoreIndicator}>
         <ActivityIndicator color={COLORS.primary} size="small" />
         <Text style={styles.loadMoreText}>Loading more…</Text>
       </View>
     );
-  }, [isFetchingNextPage]);
+  }, [isMyTab, isFetchingNextPage]);
 
   const renderEmpty = useCallback(() => {
     if (isLoading) return null;
     return (
       <View style={styles.emptyState}>
-        <Text style={styles.emptyEmoji}>🏆</Text>
+        <Text style={styles.emptyEmoji}>{isMyTab ? '📋' : '🏆'}</Text>
         <Text style={styles.emptyTitle}>
-          {searchQuery ? 'No results found' : 'No competitions yet'}
+          {isMyTab
+            ? 'No registrations yet'
+            : searchQuery
+            ? 'No results found'
+            : 'No competitions yet'}
         </Text>
         <Text style={styles.emptySubtitle}>
-          {searchQuery
+          {isMyTab
+            ? 'Competitions you register for will appear here.'
+            : searchQuery
             ? `No competitions match "${searchQuery}"`
             : 'Check back soon for new competitions!'}
         </Text>
-        {searchQuery ? (
+        {searchQuery && !isMyTab ? (
           <TouchableOpacity
             style={styles.clearSearchBtn}
             onPress={handleSearchClear}
@@ -141,7 +156,7 @@ const CompetitionsListScreen: React.FC<Props> = ({ navigation }) => {
         ) : null}
       </View>
     );
-  }, [isLoading, searchQuery, handleSearchClear]);
+  }, [isLoading, isMyTab, searchQuery, handleSearchClear]);
 
   // ── Error state ───────────────────────────────────────────────────────────
   if (isError && competitions.length === 0) {
@@ -149,14 +164,8 @@ const CompetitionsListScreen: React.FC<Props> = ({ navigation }) => {
       <View style={[styles.centerScreen, { paddingTop: insets.top }]}>
         <Text style={styles.errorEmoji}>😕</Text>
         <Text style={styles.errorTitle}>Failed to load</Text>
-        <Text style={styles.errorMsg}>
-          Could not fetch competitions. Check your connection.
-        </Text>
-        <TouchableOpacity
-          style={styles.retryBtn}
-          onPress={() => void refetch()}
-          accessibilityRole="button"
-        >
+        <Text style={styles.errorMsg}>Could not fetch competitions. Check your connection.</Text>
+        <TouchableOpacity style={styles.retryBtn} onPress={handleRefetch} accessibilityRole="button">
           <Text style={styles.retryText}>Try Again</Text>
         </TouchableOpacity>
       </View>
@@ -168,12 +177,10 @@ const CompetitionsListScreen: React.FC<Props> = ({ navigation }) => {
     <View style={[styles.flex, { paddingTop: insets.top }]}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.bgDark} />
 
-      {/* ── Header ─────────────────────────────────────────────────────── */}
+      {/* ── Header ──────────────────────────────────────────────────────── */}
       <View style={styles.header}>
         <View>
-          <Text style={styles.greeting}>
-            Hey, {user?.name?.split(' ')[0] ?? 'there'} 👋
-          </Text>
+          <Text style={styles.greeting}>Hey, {user?.name?.split(' ')[0] ?? 'there'} 👋</Text>
           <Text style={styles.headerTitle}>Competitions</Text>
         </View>
         <TouchableOpacity
@@ -186,81 +193,87 @@ const CompetitionsListScreen: React.FC<Props> = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      {/* ── Search bar ─────────────────────────────────────────────────── */}
-      <View style={styles.searchRow}>
-        <View style={styles.searchBox}>
-          <Text style={styles.searchIcon}>🔍</Text>
-          <TextInput
-            ref={searchRef}
-            style={styles.searchInput}
-            placeholder="Search competitions…"
-            placeholderTextColor={COLORS.textMuted}
-            value={searchText}
-            onChangeText={setSearchText}
-            onSubmitEditing={handleSearchSubmit}
-            returnKeyType="search"
-            autoCapitalize="none"
-            autoCorrect={false}
-            accessibilityLabel="Search competitions"
-          />
-          {searchText.length > 0 && (
-            <TouchableOpacity
-              onPress={handleSearchClear}
-              accessibilityLabel="Clear search"
-              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            >
-              <Text style={styles.clearIcon}>✕</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      </View>
-
-      {/* ── Filter tabs ────────────────────────────────────────────────── */}
-      <View>
-        <FlatList
-          horizontal
-          data={FILTER_TABS}
-          keyExtractor={(t) => t.key}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.filterRow}
-          renderItem={({ item: tab }) => (
-            <TouchableOpacity
-              style={[
-                styles.filterTab,
-                activeFilter === tab.key && styles.filterTabActive,
-              ]}
-              onPress={() => handleFilterChange(tab.key)}
-              accessibilityRole="button"
-              accessibilityState={{ selected: activeFilter === tab.key }}
-              accessibilityLabel={`Filter by ${tab.label}`}
-            >
-              <Text
-                style={[
-                  styles.filterTabText,
-                  activeFilter === tab.key && styles.filterTabTextActive,
-                ]}
+      {/* ── Search bar (hidden on My Registrations tab) ──────────────────── */}
+      {!isMyTab && (
+        <View style={styles.searchRow}>
+          <View style={styles.searchBox}>
+            <Text style={styles.searchIcon}>🔍</Text>
+            <TextInput
+              ref={searchRef}
+              style={styles.searchInput}
+              placeholder="Search competitions…"
+              placeholderTextColor={COLORS.textMuted}
+              value={searchText}
+              onChangeText={setSearchText}
+              onSubmitEditing={handleSearchSubmit}
+              returnKeyType="search"
+              autoCapitalize="none"
+              autoCorrect={false}
+              accessibilityLabel="Search competitions"
+            />
+            {searchText.length > 0 && (
+              <TouchableOpacity
+                onPress={handleSearchClear}
+                accessibilityLabel="Clear search"
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               >
-                {tab.label}
-              </Text>
-            </TouchableOpacity>
-          )}
-        />
-      </View>
+                <Text style={styles.clearIcon}>✕</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+      )}
 
-      {/* ── Count label ────────────────────────────────────────────────── */}
+      {/* ── Filter tabs ─────────────────────────────────────────────────── */}
+      <FlatList
+        horizontal
+        data={FILTER_TABS}
+        keyExtractor={(t) => t.key}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.filterRow}
+        renderItem={({ item: tab }) => (
+          <TouchableOpacity
+            style={[
+              styles.filterTab,
+              activeFilter === tab.key && styles.filterTabActive,
+              tab.key === 'mine' && styles.filterTabMine,
+              tab.key === 'mine' && activeFilter === 'mine' && styles.filterTabMineActive,
+            ]}
+            onPress={() => handleFilterChange(tab.key)}
+            accessibilityRole="button"
+            accessibilityState={{ selected: activeFilter === tab.key }}
+            accessibilityLabel={`Filter: ${tab.label}`}
+          >
+            <Text
+              style={[
+                styles.filterTabText,
+                activeFilter === tab.key && styles.filterTabTextActive,
+              ]}
+            >
+              {tab.label}
+            </Text>
+          </TouchableOpacity>
+        )}
+      />
+
+      {/* ── Count label ─────────────────────────────────────────────────── */}
       {!isLoading && (
         <Text style={styles.countLabel}>
-          {searchQuery
+          {isMyTab
+            ? `${totalCount} registered competition${totalCount !== 1 ? 's' : ''}`
+            : searchQuery
             ? `${totalCount} result${totalCount !== 1 ? 's' : ''} for "${searchQuery}"`
             : `${totalCount} competition${totalCount !== 1 ? 's' : ''}`}
         </Text>
       )}
 
-      {/* ── List ───────────────────────────────────────────────────────── */}
+      {/* ── List ────────────────────────────────────────────────────────── */}
       {isLoading ? (
         <View style={styles.loadingCenter}>
           <ActivityIndicator size="large" color={COLORS.primary} />
-          <Text style={styles.loadingText}>Loading competitions…</Text>
+          <Text style={styles.loadingText}>
+            {isMyTab ? 'Loading your registrations…' : 'Loading competitions…'}
+          </Text>
         </View>
       ) : (
         <FlatList
@@ -276,7 +289,7 @@ const CompetitionsListScreen: React.FC<Props> = ({ navigation }) => {
           refreshControl={
             <RefreshControl
               refreshing={isRefetching}
-              onRefresh={() => void refetch()}
+              onRefresh={handleRefetch}
               tintColor={COLORS.primary}
               colors={[COLORS.primary]}
             />
@@ -289,12 +302,8 @@ const CompetitionsListScreen: React.FC<Props> = ({ navigation }) => {
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
-  flex: {
-    flex: 1,
-    backgroundColor: COLORS.bgDark,
-  },
+  flex: { flex: 1, backgroundColor: COLORS.bgDark },
 
-  // Header
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -303,16 +312,8 @@ const styles = StyleSheet.create({
     paddingTop: SPACING.sm,
     paddingBottom: SPACING.md,
   },
-  greeting: {
-    fontSize: FONT_SIZE.caption,
-    color: COLORS.textMuted,
-    marginBottom: 2,
-  },
-  headerTitle: {
-    fontSize: FONT_SIZE.h1,
-    fontWeight: '800',
-    color: COLORS.textPrimary,
-  },
+  greeting: { fontSize: FONT_SIZE.caption, color: COLORS.textMuted, marginBottom: 2 },
+  headerTitle: { fontSize: FONT_SIZE.h1, fontWeight: '800', color: COLORS.textPrimary },
   logoutBtn: {
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.xs + 2,
@@ -320,17 +321,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
   },
-  logoutText: {
-    fontSize: FONT_SIZE.caption,
-    color: COLORS.textSecondary,
-    fontWeight: '600',
-  },
+  logoutText: { fontSize: FONT_SIZE.caption, color: COLORS.textSecondary, fontWeight: '600' },
 
-  // Search
-  searchRow: {
-    paddingHorizontal: SPACING.md,
-    marginBottom: SPACING.sm,
-  },
+  searchRow: { paddingHorizontal: SPACING.md, marginBottom: SPACING.sm },
   searchBox: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -342,26 +335,11 @@ const styles = StyleSheet.create({
     height: 46,
     gap: SPACING.sm,
   },
-  searchIcon: {
-    fontSize: 16,
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: FONT_SIZE.body,
-    color: COLORS.textPrimary,
-  },
-  clearIcon: {
-    fontSize: 14,
-    color: COLORS.textMuted,
-    paddingHorizontal: SPACING.xs,
-  },
+  searchIcon: { fontSize: 16 },
+  searchInput: { flex: 1, fontSize: FONT_SIZE.body, color: COLORS.textPrimary },
+  clearIcon: { fontSize: 14, color: COLORS.textMuted, paddingHorizontal: SPACING.xs },
 
-  // Filters
-  filterRow: {
-    paddingHorizontal: SPACING.md,
-    paddingBottom: SPACING.sm,
-    gap: SPACING.xs,
-  },
+  filterRow: { paddingHorizontal: SPACING.md, paddingBottom: SPACING.sm, gap: SPACING.xs },
   filterTab: {
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.xs + 2,
@@ -370,20 +348,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
   },
-  filterTabActive: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
-  },
-  filterTabText: {
-    fontSize: FONT_SIZE.caption,
-    fontWeight: '600',
-    color: COLORS.textSecondary,
-  },
-  filterTabTextActive: {
-    color: COLORS.textPrimary,
-  },
+  filterTabActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
+  filterTabMine: { borderColor: COLORS.success, backgroundColor: 'rgba(0,212,160,0.1)' },
+  filterTabMineActive: { backgroundColor: COLORS.success, borderColor: COLORS.success },
+  filterTabText: { fontSize: FONT_SIZE.caption, fontWeight: '600', color: COLORS.textSecondary },
+  filterTabTextActive: { color: COLORS.textPrimary },
 
-  // Count
   countLabel: {
     paddingHorizontal: SPACING.md,
     paddingBottom: SPACING.sm,
@@ -391,23 +361,11 @@ const styles = StyleSheet.create({
     color: COLORS.textMuted,
   },
 
-  // List
-  listContent: {
-    paddingTop: SPACING.xs,
-    paddingBottom: SPACING.xl,
-  },
+  listContent: { paddingTop: SPACING.xs, paddingBottom: SPACING.xl },
 
-  // Loading
-  loadingCenter: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: SPACING.sm,
-  },
-  loadingText: {
-    fontSize: FONT_SIZE.body,
-    color: COLORS.textMuted,
-  },
+  loadingCenter: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: SPACING.sm },
+  loadingText: { fontSize: FONT_SIZE.body, color: COLORS.textMuted },
+
   loadMoreIndicator: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -415,21 +373,10 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.md,
     gap: SPACING.sm,
   },
-  loadMoreText: {
-    fontSize: FONT_SIZE.caption,
-    color: COLORS.textMuted,
-  },
+  loadMoreText: { fontSize: FONT_SIZE.caption, color: COLORS.textMuted },
 
-  // Empty
-  emptyState: {
-    alignItems: 'center',
-    paddingTop: SPACING['3xl'],
-    paddingHorizontal: SPACING.xl,
-  },
-  emptyEmoji: {
-    fontSize: 56,
-    marginBottom: SPACING.md,
-  },
+  emptyState: { alignItems: 'center', paddingTop: SPACING['3xl'], paddingHorizontal: SPACING.xl },
+  emptyEmoji: { fontSize: 56, marginBottom: SPACING.md },
   emptyTitle: {
     fontSize: FONT_SIZE.h3,
     fontWeight: '700',
@@ -451,13 +398,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
   },
-  clearSearchText: {
-    fontSize: FONT_SIZE.body,
-    fontWeight: '600',
-    color: COLORS.primary,
-  },
+  clearSearchText: { fontSize: FONT_SIZE.body, fontWeight: '600', color: COLORS.primary },
 
-  // Error
   centerScreen: {
     flex: 1,
     backgroundColor: COLORS.bgDark,
@@ -465,10 +407,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: SPACING.xl,
   },
-  errorEmoji: {
-    fontSize: 56,
-    marginBottom: SPACING.md,
-  },
+  errorEmoji: { fontSize: 56, marginBottom: SPACING.md },
   errorTitle: {
     fontSize: FONT_SIZE.h2,
     fontWeight: '700',
@@ -488,11 +427,7 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.sm + 4,
     borderRadius: 12,
   },
-  retryText: {
-    fontSize: FONT_SIZE.bodyLg,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
-  },
+  retryText: { fontSize: FONT_SIZE.bodyLg, fontWeight: '700', color: COLORS.textPrimary },
 });
 
 export default CompetitionsListScreen;
