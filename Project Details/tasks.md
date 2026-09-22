@@ -91,41 +91,41 @@ All tasks are organized by phase. Each task should be completed and verified bef
 
 ## Phase 5 — Competition Details Screen (Frontend)
 
-- [ ] **T5.1** Create `ICompetition` and `IRegistration` TypeScript interfaces
-- [ ] **T5.2** Create API service functions
+- [x] **T5.1** Create `ICompetition` and `IRegistration` TypeScript interfaces
+- [x] **T5.2** Create API service functions
   - `getCompetition(id)`, `registerForCompetition(id)`, `withdrawFromCompetition(id)`
   - `getCompetitionParticipants(id)`
-- [ ] **T5.3** Setup React Query for competition data fetching
+- [x] **T5.3** Setup React Query for competition data fetching
   - `useCompetition(id)` hook with loading/error states
   - Auto-refetch on window focus
-- [ ] **T5.4** Build `CompetitionBanner` component
+- [x] **T5.4** Build `CompetitionBanner` component
   - Full-width image, gradient overlay, back button
-- [ ] **T5.5** Build `StatusBadge` component
+- [x] **T5.5** Build `StatusBadge` component
   - Color-coded, all status states
-- [ ] **T5.6** Build `StatsRow` component
+- [x] **T5.6** Build `StatsRow` component
   - Participants count, time remaining, entry fee chips
-- [ ] **T5.7** Build `SpotsProgressBar` component
+- [x] **T5.7** Build `SpotsProgressBar` component
   - Animated fill, warning color when low
-- [ ] **T5.8** Build `CountdownTimer` component
+- [x] **T5.8** Build `CountdownTimer` component
   - Real-time countdown with `setInterval`, days/hours/minutes/seconds
   - Cleans up interval on unmount
-- [ ] **T5.9** Build `RegistrationButton` component
+- [x] **T5.9** Build `RegistrationButton` component
   - All 5 states: register, registered, full, ended, upcoming
   - Loading state during API call
   - Haptic feedback
-- [ ] **T5.10** Build `ParticipantsPreview` component
+- [x] **T5.10** Build `ParticipantsPreview` component
   - Avatar stack + overflow count
-- [ ] **T5.11** Build `RulesSection` component
+- [x] **T5.11** Build `RulesSection` component
   - Collapsible accordion list
-- [ ] **T5.12** Assemble `CompetitionDetailsScreen`
+- [x] **T5.12** Assemble `CompetitionDetailsScreen`
   - Compose all sub-components
   - ScrollView layout matching design reference
   - Sticky registration button at bottom
-- [ ] **T5.13** Handle all UI states
+- [x] **T5.13** Handle all UI states
   - Loading skeleton
   - Error state with retry button
   - Empty/not found state
-- [ ] **T5.14** Wire registration action
+- [x] **T5.14** Wire registration action
   - Call API on button press
   - Optimistic UI update
   - Show toast on success/error

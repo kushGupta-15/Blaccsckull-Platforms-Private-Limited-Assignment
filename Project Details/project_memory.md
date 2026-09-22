@@ -6,7 +6,7 @@ This file tracks the current state of the project. Update it as tasks are comple
 
 ## Current Status
 
-**Phase:** Phase 4 complete — ready to begin Phase 5 (Competition Details Screen)
+**Phase:** Phase 5 complete — ready to begin Phase 6 (Competitions List Screen)
 **Last Updated:** 2026-09-22
 
 ---
@@ -14,18 +14,23 @@ This file tracks the current state of the project. Update it as tasks are comple
 ## Completed Tasks
 
 - [x] Planning documents
-### Phase 1 ✅ | Phase 2 ✅ | Phase 3 ✅
+### Phase 1 ✅ | Phase 2 ✅ | Phase 3 ✅ | Phase 4 ✅
 
-### Phase 4 — Competition Backend ✅
-- [x] T4.1 — `Competition` model with `computedStatus` virtual (derived from dates + capacity, never stale)
-- [x] T4.2 — `Registration` model with compound unique index `{ userId, competitionId }`
-- [x] T4.3 — `GET /competitions` — paginated, status filter, text search
-- [x] T4.4 — `GET /competitions/:id` — populated host, injects `userRegistrationStatus` when authed
-- [x] T4.5 — `POST /competitions/:id/register` — atomic `findOneAndUpdate` spot decrement, duplicate + race condition safe
-- [x] T4.6 — `DELETE /competitions/:id/register` — atomic counter increment on withdrawal
-- [x] T4.7 — `GET /competitions/:id/participants` — paginated active registrations
-- [x] T4.8 — 4 seed competitions (upcoming, active, ended, full) auto-seeded on first boot
-- [x] T4.9 — Status computed dynamically via Mongoose virtual (no cron needed)
+### Phase 5 — Competition Details Screen ✅
+- [x] T5.1 — All interfaces in `types/index.ts` (`ICompetition`, `IRegistration`, etc.)
+- [x] T5.2 — All API functions in `api/competitions.ts`
+- [x] T5.3 — `useCompetition`, `useParticipants`, `useRegister`, `useWithdraw` hooks with React Query
+- [x] T5.4 — `CompetitionBanner` — full-width image, gradient overlay, safe-area back button
+- [x] T5.5 — `StatusBadge` — all 5 states color-coded with dot indicator
+- [x] T5.6 — `StatsRow` — participants chip, time chip, entry fee chip
+- [x] T5.7 — `SpotsProgressBar` — animated fill, color shifts warning/error when low/full
+- [x] T5.8 — `CountdownTimer` — real-time DD:HH:MM:SS, interval cleaned up on unmount
+- [x] T5.9 — `RegistrationButton` — all 5 states, loading spinner, auth-aware note
+- [x] T5.10 — `ParticipantsPreview` — avatar stack with initials fallback + overflow count
+- [x] T5.11 — `RulesSection` — collapsible accordion, shows first 3 then expand
+- [x] T5.12 — `CompetitionDetailsScreen` — full assembly: banner → badge → title → host → dates → prize → stats → progress → timer → description → rules → participants → sticky button
+- [x] T5.13 — Loading skeleton, error state with retry + back, pull-to-refresh
+- [x] T5.14 — Register/withdraw wired with React Query mutations, toast on success/error, cache invalidation
 
 ---
 
