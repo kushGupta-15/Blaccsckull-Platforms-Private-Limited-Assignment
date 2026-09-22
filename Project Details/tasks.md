@@ -135,11 +135,11 @@ All tasks are organized by phase. Each task should be completed and verified bef
 
 ## Phase 6 — Competitions List Screen (Frontend)
 
-- [ ] **T6.1** Build `CompetitionCard` component (summary view)
-- [ ] **T6.2** Build `CompetitionsListScreen`
+- [x] **T6.1** Build `CompetitionCard` component (summary view)
+- [x] **T6.2** Build `CompetitionsListScreen`
   - FlatList with pagination (infinite scroll or load more)
   - Pull-to-refresh
-- [ ] **T6.3** Connect list screen → detail screen navigation with competition ID
+- [x] **T6.3** Connect list screen → detail screen navigation with competition ID
 
 ---
 

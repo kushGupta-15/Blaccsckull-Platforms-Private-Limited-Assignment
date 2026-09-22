@@ -6,7 +6,7 @@ This file tracks the current state of the project. Update it as tasks are comple
 
 ## Current Status
 
-**Phase:** Phase 5 complete — ready to begin Phase 6 (Competitions List Screen)
+**Phase:** Phase 6 complete — ready to begin Phase 7 (Polish & Edge Cases)
 **Last Updated:** 2026-09-22
 
 ---
@@ -14,23 +14,12 @@ This file tracks the current state of the project. Update it as tasks are comple
 ## Completed Tasks
 
 - [x] Planning documents
-### Phase 1 ✅ | Phase 2 ✅ | Phase 3 ✅ | Phase 4 ✅
+### Phase 1 ✅ | Phase 2 ✅ | Phase 3 ✅ | Phase 4 ✅ | Phase 5 ✅
 
-### Phase 5 — Competition Details Screen ✅
-- [x] T5.1 — All interfaces in `types/index.ts` (`ICompetition`, `IRegistration`, etc.)
-- [x] T5.2 — All API functions in `api/competitions.ts`
-- [x] T5.3 — `useCompetition`, `useParticipants`, `useRegister`, `useWithdraw` hooks with React Query
-- [x] T5.4 — `CompetitionBanner` — full-width image, gradient overlay, safe-area back button
-- [x] T5.5 — `StatusBadge` — all 5 states color-coded with dot indicator
-- [x] T5.6 — `StatsRow` — participants chip, time chip, entry fee chip
-- [x] T5.7 — `SpotsProgressBar` — animated fill, color shifts warning/error when low/full
-- [x] T5.8 — `CountdownTimer` — real-time DD:HH:MM:SS, interval cleaned up on unmount
-- [x] T5.9 — `RegistrationButton` — all 5 states, loading spinner, auth-aware note
-- [x] T5.10 — `ParticipantsPreview` — avatar stack with initials fallback + overflow count
-- [x] T5.11 — `RulesSection` — collapsible accordion, shows first 3 then expand
-- [x] T5.12 — `CompetitionDetailsScreen` — full assembly: banner → badge → title → host → dates → prize → stats → progress → timer → description → rules → participants → sticky button
-- [x] T5.13 — Loading skeleton, error state with retry + back, pull-to-refresh
-- [x] T5.14 — Register/withdraw wired with React Query mutations, toast on success/error, cache invalidation
+### Phase 6 — Competitions List Screen ✅
+- [x] T6.1 — `CompetitionCard` — banner image with gradient, status badge, title, host, spots/date/fee footer, FREE + Prize badges
+- [x] T6.2 — `CompetitionsListScreen` — FlatList with infinite scroll (`useInfiniteQuery`), pull-to-refresh, status filter tabs, search bar with clear, count label, loading/error/empty states, logout button
+- [x] T6.3 — `navigation.navigate('CompetitionDetails', { competitionId })` wired on card press
 
 ---
 
