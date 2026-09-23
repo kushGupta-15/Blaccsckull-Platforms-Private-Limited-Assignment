@@ -6,8 +6,20 @@ This file tracks the current state of the project. Update it as tasks are comple
 
 ## Current Status
 
-**Phase:** Phase 8 complete (T8.2 + T8.3 require manual action)
+**Phase:** All phases complete ✅
 **Last Updated:** 2026-09-23
+
+---
+
+## Completed Tasks
+
+- [x] All phases 1–8 complete
+
+### Post-Phase Additions ✅
+- [x] My Registrations feature — `GET /api/v1/users/me/registrations` backend endpoint + "✅ My Registrations" filter tab in list screen
+- [x] Settings screen — profile card (name, Gmail/email, initials avatar, joined date), Account Info rows, Logout button with confirmation alert
+- [x] Settings button (⚙️) in Competitions List header replaces old Logout button
+- [x] UI fixes — filter tab contrast improved (larger text, better background, clearer active state), header alignment fixed
 
 ---
 

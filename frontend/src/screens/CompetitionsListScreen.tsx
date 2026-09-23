@@ -31,8 +31,8 @@ type FilterTab = 'all' | 'mine' | CompetitionStatus;
 
 const FILTER_TABS: { key: FilterTab; label: string }[] = [
   { key: 'all',      label: 'All' },
-  { key: 'mine',     label: '✅ My Registrations' },
-  { key: 'active',   label: '🟢 Active' },
+  { key: 'mine',     label: '✅ Mine' },
+  { key: 'active',   label: '🟢 Live' },
   { key: 'upcoming', label: '🟡 Upcoming' },
   { key: 'ended',    label: '🔴 Ended' },
   { key: 'full',     label: '🔵 Full' },
@@ -184,12 +184,12 @@ const CompetitionsListScreen: React.FC<Props> = ({ navigation }) => {
           <Text style={styles.headerTitle}>Competitions</Text>
         </View>
         <TouchableOpacity
-          style={styles.logoutBtn}
-          onPress={() => void logout()}
+          style={styles.settingsBtn}
+          onPress={() => navigation.navigate('Settings')}
           accessibilityRole="button"
-          accessibilityLabel="Logout"
+          accessibilityLabel="Open Settings"
         >
-          <Text style={styles.logoutText}>Logout</Text>
+          <Text style={styles.settingsIcon}>⚙️</Text>
         </TouchableOpacity>
       </View>
 
@@ -231,6 +231,7 @@ const CompetitionsListScreen: React.FC<Props> = ({ navigation }) => {
         keyExtractor={(t) => t.key}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.filterRow}
+        style={styles.filterList}
         renderItem={({ item: tab }) => (
           <TouchableOpacity
             style={[
@@ -307,21 +308,24 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-end',
+    alignItems: 'center',
     paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.sm,
+    paddingTop: SPACING.md,
     paddingBottom: SPACING.md,
   },
   greeting: { fontSize: FONT_SIZE.caption, color: COLORS.textMuted, marginBottom: 2 },
   headerTitle: { fontSize: FONT_SIZE.h1, fontWeight: '800', color: COLORS.textPrimary },
-  logoutBtn: {
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.xs + 2,
-    borderRadius: 10,
+  settingsBtn: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: COLORS.bgElevated,
     borderWidth: 1,
     borderColor: COLORS.border,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  logoutText: { fontSize: FONT_SIZE.caption, color: COLORS.textSecondary, fontWeight: '600' },
+  settingsIcon: { fontSize: 20 },
 
   searchRow: { paddingHorizontal: SPACING.md, marginBottom: SPACING.sm },
   searchBox: {
@@ -339,20 +343,45 @@ const styles = StyleSheet.create({
   searchInput: { flex: 1, fontSize: FONT_SIZE.body, color: COLORS.textPrimary },
   clearIcon: { fontSize: 14, color: COLORS.textMuted, paddingHorizontal: SPACING.xs },
 
-  filterRow: { paddingHorizontal: SPACING.md, paddingBottom: SPACING.sm, gap: SPACING.xs },
-  filterTab: {
+  filterList: {
+    flexGrow: 0,
+    flexShrink: 0,
+  },
+  filterRow: {
     paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.xs + 2,
-    borderRadius: 20,
+    paddingBottom: SPACING.md,
+    paddingTop: SPACING.sm,
+    gap: SPACING.sm,
+    alignItems: 'center',
+  },
+  filterTab: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 24,
     backgroundColor: COLORS.bgSurface,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: '#3A3A5C',
   },
-  filterTabActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
-  filterTabMine: { borderColor: COLORS.success, backgroundColor: 'rgba(0,212,160,0.1)' },
-  filterTabMineActive: { backgroundColor: COLORS.success, borderColor: COLORS.success },
-  filterTabText: { fontSize: FONT_SIZE.caption, fontWeight: '600', color: COLORS.textSecondary },
-  filterTabTextActive: { color: COLORS.textPrimary },
+  filterTabActive: {
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
+  },
+  filterTabMine: {
+    borderColor: COLORS.success,
+    backgroundColor: 'rgba(0,212,160,0.12)',
+  },
+  filterTabMineActive: {
+    backgroundColor: COLORS.success,
+    borderColor: COLORS.success,
+  },
+  filterTabText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#C0C0D8',
+  },
+  filterTabTextActive: {
+    color: '#FFFFFF',
+  },
 
   countLabel: {
     paddingHorizontal: SPACING.md,

@@ -76,4 +76,5 @@ export type RootStackParamList = {
   Register: undefined;
   CompetitionsList: undefined;
   CompetitionDetails: { competitionId: string };
+  Settings: undefined;
 };

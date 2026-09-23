@@ -11,6 +11,7 @@ import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import CompetitionsListScreen from '../screens/CompetitionsListScreen';
 import CompetitionDetailsScreen from '../screens/CompetitionDetails/CompetitionDetailsScreen';
+import SettingsScreen from '../screens/SettingsScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -52,6 +53,10 @@ const AppNavigator: React.FC = () => {
             <Stack.Screen
               name="CompetitionDetails"
               component={CompetitionDetailsScreen}
+            />
+            <Stack.Screen
+              name="Settings"
+              component={SettingsScreen}
             />
           </>
         ) : (
