@@ -174,8 +174,74 @@ All tasks are organized by phase. Each task should be completed and verified bef
 
 ---
 
+## Phase 9 — Competition Creation & Host Management (Option 3)
+
+- [ ] **T9.1** (Backend) Implement `POST /api/v1/competitions`
+  - Auth required; automatically set `hostId: req.user._id`
+  - Input validation: title, description, category, dates, spots, rules
+- [ ] **T9.2** (Backend) Implement `PUT /api/v1/competitions/:id`
+  - Verify current user is the host
+  - Allow updating rules, dates, capacity, banner image, and status
+- [ ] **T9.3** (Backend) Implement `GET /api/v1/competitions/hosted/me` & `GET /api/v1/competitions/:id/admin-stats`
+  - Return all competitions created by logged-in host
+  - Aggregate statistics: registered users count, submissions count, spots filled
+- [ ] **T9.4** (Frontend) Build `CreateCompetitionScreen`
+  - Multi-input form: title, category, description, banner URL, dates, spots, prize pool
+  - Dynamic rules builder (add / remove rule items)
+  - Validation and submission to `POST /api/v1/competitions`
+- [ ] **T9.5** (Frontend) Build `OrganizerDashboardScreen`
+  - View all events hosted by current user
+  - Metric chips: total participants, submissions received, competition status
+  - Fast actions: manage event, review submissions
+- [ ] **T9.6** (Frontend) Navigation wiring
+  - Add "Host Event" and "Organizer Dashboard" routes to `RootStackParamList`
+  - Entry points from Competitions List header and Settings screen
+
+---
+
+## Phase 10 — Project Submission & Review System (Option 1)
+
+- [ ] **T10.1** (Backend) Create `Submission` Mongoose model & schema
+  - Fields: competitionId, userId, title, description, repositoryUrl, demoUrl, mediaUrl, status, score, feedback, isWinner, awardRank, upvotes, upvoteCount
+  - Compound unique index on `{ competitionId, userId }` (one submission per participant)
+- [ ] **T10.2** (Backend) Implement `POST /api/v1/competitions/:id/submissions`
+  - Auth required; verify user has an active registration
+  - Validate repository URL, title, description
+  - Create or update submission before deadline
+- [ ] **T10.3** (Backend) Implement `GET /api/v1/competitions/:id/submissions` & `GET /api/v1/competitions/:id/submissions/mine`
+  - Paginated list of submissions with author details and upvote counts
+  - Endpoint for participant to view their own submission status
+- [ ] **T10.4** (Backend) Implement `POST /api/v1/submissions/:id/upvote`
+  - Atomic upvote toggle (`$addToSet` / `$pull` + `$inc` upvoteCount)
+- [ ] **T10.5** (Backend) Implement `PUT /api/v1/submissions/:id/evaluate` & `POST /api/v1/competitions/:id/finalize-winners`
+  - Host authorization check
+  - Grade submissions (score 0–100, feedback, assign winner podium rank)
+- [ ] **T10.6** (Frontend) Build `SubmitProjectModal` / `SubmitProjectScreen`
+  - Form: title, description, GitHub repository URL, live demo link, media URL
+  - Client-side URL validation & instant feedback
+- [ ] **T10.7** (Frontend) Build `SubmissionCard` component
+  - Author avatar & name, project title, summary, GitHub & demo links, upvote button with count, winner badge
+- [ ] **T10.8** (Frontend) Integrate Submissions into `CompetitionDetailsScreen`
+  - Segmented control / Tab bar: "Overview" vs "Submissions"
+  - "Submit Project" action button for registered participants
+
+---
+
+## Phase 11 — Winners Showcase, Host Evaluation & Final Polish
+
+- [ ] **T11.1** (Frontend) Build `WinnersPodium` component
+  - Celebratory podium display (🥇 1st, 🥈 2nd, 🥉 3rd) on competition details when winners are declared
+- [ ] **T11.2** (Frontend) Build Host Evaluation interface in Organizer Dashboard
+  - Host can review each submission, enter a score/feedback, and select podium winners
+- [ ] **T11.3** End-to-end verification across Mobile and Web
+  - Test complete lifecycle: Create Competition → Register → Submit Project → Upvote → Host Evaluation → Winner Celebration
+  - Verify TypeScript compilation and responsive UI on mobile and web
+
+---
+
 ## Task Notes
 
 - Tasks T4.5 and T5.14 are the most critical — concurrent registration handling is a key evaluation criterion
 - T5.8 (countdown timer) should be tested for memory leaks (interval cleanup)
 - T4.9 (status auto-update) can be done via a simple computed field approach first, then upgraded to a cron job if time permits
+- Phase 9 & 10 transform Feedants into a complete end-to-end hackathon/competition ecosystem.

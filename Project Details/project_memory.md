@@ -6,66 +6,25 @@ This file tracks the current state of the project. Update it as tasks are comple
 
 ## Current Status
 
-**Phase:** All phases complete ✅
-**Last Updated:** 2026-09-23
-
----
-
-## Completed Tasks
-
-- [x] All phases 1–8 complete
-
-### Post-Phase Additions ✅
-- [x] My Registrations feature — `GET /api/v1/users/me/registrations` backend endpoint + "✅ My Registrations" filter tab in list screen
-- [x] Settings screen — profile card (name, Gmail/email, initials avatar, joined date), Account Info rows, Logout button with confirmation alert
-- [x] Settings button (⚙️) in Competitions List header replaces old Logout button
-- [x] UI fixes — filter tab contrast improved (larger text, better background, clearer active state), header alignment fixed
-
----
-
-## Completed Tasks
-
-- [x] All phases 1–7 complete
-### Phase 8 — Documentation & Submission ✅ (automatable parts)
-- [x] T8.1 — `README.md` written with full setup instructions, env vars, assumptions, decisions, trade-offs, and future improvements
-- [ ] T8.2 — **Manual:** Record screen demo (`npx expo start` → login → list → details → register → withdraw)
-- [ ] T8.3 — **Manual:** Push to GitHub (`git init && git add . && git commit && git push`)
-- [x] T8.4 — Final review: 38/38 submission checks passed ✅
-
----
-
-## Completed Tasks
-
-- [x] Planning + Phase 1 ✅ + Phase 2 ✅ + Phase 3 ✅ + Phase 4 ✅ + Phase 5 ✅ + Phase 6 ✅
-
-### Phase 7 — Polish & Edge Cases ✅
-- [x] T7.1 — Axios 401 interceptor auto-clears SecureStore + triggers logout (done in Phase 3)
-- [x] T7.2 — `useNetworkStatus` hook (fetch polling + AppState listener) + `OfflineBanner` animated slide-in, wired in `App.tsx`
-- [x] T7.3 — Client-side validation: email regex, password strength (length/uppercase/number), confirm match, name length (done in Phase 3)
-- [x] T7.4 — `testConcurrency.ts` script: 10 simultaneous registrations, 4 assertions (no 5xx, successes=decrement, no overbook, no negative count) — all pass ✅
-- [x] T7.5 — `rateLimiter.ts`: `authLimiter` (10/15min on login+register), `registrationActionLimiter` (5/15min on POST register) — 429 verified
-- [x] T7.6 — `passwordHash` has `select:false` + `toJSON` transform strip — never in any API response (verified)
-- [x] T7.7 — `accessibilityLabel`, `accessibilityRole`, `accessibilityState`, `accessibilityLiveRegion` present in all 10 key components/screens
-- [x] T7.8 — Manual step: run `npx expo start` and test on iOS/Android simulator
-
----
-
-## In Progress
-
-_None_
+**Phase:** Phase 9 (Host Dashboard & Competition Creation) + Phase 10 (Project Submission & Review) 🚀
+**Last Updated:** 2026-10-06
 
 ---
 
 ## Decisions Made
 
 | Date | Decision | Reason |
-|------|----------|--------|
+|---|---|---|
 | 2026-09-22 | Use Expo (managed workflow) for React Native | Faster setup, easier cross-platform testing, good for internship assignment scope |
 | 2026-09-22 | Use Zustand for global state | Lightweight, minimal boilerplate, no context provider nesting issues |
 | 2026-09-22 | Use React Query for server state | Handles caching, loading/error states, background refetch out of the box |
 | 2026-09-22 | Compute competition status dynamically | Simpler than a cron job, eliminates stale status bugs; recalculate at query time based on dates |
 | 2026-09-22 | Atomic `findOneAndUpdate` for registration | Safely handles concurrent users without distributed locking complexity |
 | 2026-09-22 | JWT in Authorization header (not cookies) | Standard for React Native apps, simpler CORS handling |
+| 2026-10-06 | Universal appStorage adapter (SecureStore + localStorage) | Enables seamless deployment across Native iOS/Android and Web browsers |
+| 2026-10-06 | Implement Project Submissions & Review (Option 1) | Completes full hackathon lifecycle: register -> submit project -> peer upvote -> host grade -> winners |
+| 2026-10-06 | Implement Host / Organizer Dashboard & Creator (Option 3) | Allows users to create events and manage participants & winners |
+
 | 2026-09-22 | Manually scaffold frontend instead of create-expo-app | CLI timed out in the environment; manual scaffold is faster and gives full control |
 
 ---

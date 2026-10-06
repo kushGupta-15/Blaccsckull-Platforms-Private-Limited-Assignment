@@ -75,21 +75,23 @@ The Competition Details screen should not rely on hardcoded or static data. All 
 - Show count of current participants
 - Optionally show list of recent or top participants
 
-### 6. Backend API
-- RESTful endpoints for competition CRUD
-- Registration endpoint with concurrency-safe logic
-- User auth (JWT-based)
-- Input validation and error responses
+### 8. Host & Organizer Management (Extension)
+- Competition creation wizard allowing authenticated hosts to launch new events
+- Customizable event parameters: title, description, category, banner, start/end dates, spot limits, prize pool, dynamic rules list
+- Organizer Dashboard to view and manage all competitions hosted by the current user
+- Participant roster inspection with registration timestamps and submission counts
 
-### 7. Data Consistency
-- Atomic MongoDB operations for spot decrement
-- Prevent race conditions on concurrent registrations
-- Idempotent registration handling
+### 9. Project Submission & Review Workflow (Extension)
+- Registered participants can submit project entries (title, description, GitHub repository link, live demo URL, preview media)
+- Submission deadline validation and one-submission-per-participant constraint
+- Public Submissions Showcase tab on the competition screen
+- Peer upvoting / appreciation system on submissions
+- Host evaluation interface to score submissions (0–100), leave feedback, and award winner podium ranks (1st, 2nd, 3rd)
+- Celebratory Winners showcase displaying badges and project highlights
 
 ---
 
-## Out of Scope (for this assignment)
-- Admin panel for creating/editing competitions
-- Payment processing for paid competitions
+## Out of Scope
+- Payment gateway processor integration (real money transactions)
 - Push notifications
-- Social sharing
+- Video streaming within app

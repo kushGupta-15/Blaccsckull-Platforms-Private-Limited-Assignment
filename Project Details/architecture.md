@@ -128,30 +128,69 @@
 ```
 > Compound unique index on `{ userId, competitionId }` to prevent duplicates.
 
+### `submissions` Collection (Extension)
+```json
+{
+  "_id": "ObjectId",
+  "competitionId": "ObjectId (ref: competitions, indexed)",
+  "userId": "ObjectId (ref: users, indexed)",
+  "title": "string",
+  "description": "string",
+  "repositoryUrl": "string (url)",
+  "demoUrl": "string (url, optional)",
+  "mediaUrl": "string (url, optional)",
+  "status": "enum: submitted | under_review | evaluated",
+  "score": "number (0-100, optional)",
+  "feedback": "string (optional)",
+  "isWinner": "boolean (default: false)",
+  "awardRank": "number (1 = 1st, 2 = 2nd, 3 = 3rd, optional)",
+  "upvotes": ["ObjectId (ref: users)"],
+  "upvoteCount": "number (default: 0, indexed)",
+  "createdAt": "Date",
+  "updatedAt": "Date"
+}
+```
+> Compound unique index on `{ competitionId, userId }` ensures one submission per participant.
+
 ---
 
 ## API Endpoints
 
 ### Auth
 | Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/auth/register` | Create new user |
-| POST | `/api/auth/login` | Login, returns JWT |
-| GET | `/api/auth/me` | Get current user profile |
+|---|---|---|
+| POST | `/api/v1/auth/register` | Create new user |
+| POST | `/api/v1/auth/login` | Login, returns JWT |
+| GET | `/api/v1/users/me` | Get current user profile |
 
-### Competitions
+### Competitions & Host Management
 | Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/competitions` | List all competitions (paginated) |
-| GET | `/api/competitions/:id` | Get single competition details |
-| GET | `/api/competitions/:id/participants` | Get participant list |
+|---|---|---|
+| GET | `/api/v1/competitions` | List all competitions (paginated, filters) |
+| GET | `/api/v1/competitions/:id` | Get single competition details |
+| POST | `/api/v1/competitions` | Create new competition (Host only) |
+| PUT | `/api/v1/competitions/:id` | Update competition details (Host only) |
+| GET | `/api/v1/competitions/hosted/me` | Get competitions hosted by current user |
+| GET | `/api/v1/competitions/:id/participants` | Get participant roster |
+| GET | `/api/v1/competitions/:id/admin-stats` | Get host dashboard stats & overview |
+| POST | `/api/v1/competitions/:id/finalize-winners`| Finalize & announce winners |
 
 ### Registration
 | Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/competitions/:id/register` | Register current user |
-| DELETE | `/api/competitions/:id/register` | Withdraw registration |
-| GET | `/api/competitions/:id/status` | Get user's registration status |
+|---|---|---|
+| POST | `/api/v1/competitions/:id/register` | Register current user (concurrency safe) |
+| DELETE | `/api/v1/competitions/:id/register` | Withdraw registration |
+| GET | `/api/v1/competitions/:id/registration-status`| Get current user registration status |
+| GET | `/api/v1/users/me/registrations` | Get current user's registered competitions |
+
+### Submissions & Review Workflow
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/api/v1/competitions/:id/submissions` | Create or update project submission |
+| GET | `/api/v1/competitions/:id/submissions` | Get public submissions showcase |
+| GET | `/api/v1/competitions/:id/submissions/mine`| Get current user's submission |
+| POST | `/api/v1/submissions/:id/upvote` | Toggle upvote on submission |
+| PUT | `/api/v1/submissions/:id/evaluate` | Grade/evaluate submission (Host only) |
 
 ---
 
