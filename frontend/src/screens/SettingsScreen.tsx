@@ -97,6 +97,38 @@ const SettingsScreen: React.FC<Props> = ({ navigation }) => {
         </View>
 
         {/* ══════════════════════════════════════════════════════════════
+            HOSTING & EVENTS
+        ══════════════════════════════════════════════════════════════ */}
+        <Text style={styles.sectionLabel}>HOSTING & EVENTS</Text>
+        <View style={styles.card}>
+          <TouchableOpacity
+            style={actionRowStyles.row}
+            onPress={() => navigation.navigate('OrganizerDashboard')}
+            activeOpacity={0.7}
+          >
+            <Text style={actionRowStyles.icon}>👑</Text>
+            <View style={actionRowStyles.texts}>
+              <Text style={actionRowStyles.title}>Organizer Dashboard</Text>
+              <Text style={actionRowStyles.subtitle}>Manage your hosted events & participants</Text>
+            </View>
+            <Text style={actionRowStyles.arrow}>›</Text>
+          </TouchableOpacity>
+          <View style={styles.separator} />
+          <TouchableOpacity
+            style={actionRowStyles.row}
+            onPress={() => navigation.navigate('CreateCompetition', {})}
+            activeOpacity={0.7}
+          >
+            <Text style={actionRowStyles.icon}>🚀</Text>
+            <View style={actionRowStyles.texts}>
+              <Text style={actionRowStyles.title}>Host a New Competition</Text>
+              <Text style={actionRowStyles.subtitle}>Create guidelines, dates, and prizes</Text>
+            </View>
+            <Text style={actionRowStyles.arrow}>›</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* ══════════════════════════════════════════════════════════════
             APP INFO
         ══════════════════════════════════════════════════════════════ */}
         <Text style={styles.sectionLabel}>APP</Text>
@@ -154,6 +186,21 @@ const rowStyles = StyleSheet.create({
   texts:  { flex: 1 },
   label:  { fontSize: FONT_SIZE.caption, color: COLORS.textMuted, marginBottom: 2 },
   value:  { fontSize: FONT_SIZE.body, color: COLORS.textPrimary, fontWeight: '600' },
+});
+
+const actionRowStyles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.md,
+    gap: SPACING.md,
+  },
+  icon: { fontSize: 22, width: 30, textAlign: 'center' },
+  texts: { flex: 1 },
+  title: { fontSize: FONT_SIZE.body, color: COLORS.textPrimary, fontWeight: '700' },
+  subtitle: { fontSize: FONT_SIZE.caption, color: COLORS.textSecondary, marginTop: 2 },
+  arrow: { fontSize: 22, color: COLORS.textMuted },
 });
 
 // ── Styles ────────────────────────────────────────────────────────────────────

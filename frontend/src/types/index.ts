@@ -70,6 +70,31 @@ export interface PaginatedResponse<T> {
   totalPages: number;
 }
 
+// ── Host & Competition Creation (Phase 9) ────────────────────────────────────
+export interface CreateCompetitionInput {
+  title: string;
+  description: string;
+  category: string;
+  startDate: string;
+  endDate: string;
+  totalSpots: number;
+  entryFee?: number;
+  prizePool?: string;
+  rules?: string[];
+  bannerImage?: string;
+}
+
+export interface CompetitionAdminStats {
+  competition: ICompetition;
+  stats: {
+    totalSpots: number;
+    registeredCount: number;
+    spotsRemaining: number;
+    status: CompetitionStatus;
+    submissionCount: number;
+  };
+}
+
 // ── Navigation ────────────────────────────────────────────────────────────────
 export type RootStackParamList = {
   Login: undefined;
@@ -77,4 +102,6 @@ export type RootStackParamList = {
   CompetitionsList: undefined;
   CompetitionDetails: { competitionId: string };
   Settings: undefined;
+  CreateCompetition: { competitionId?: string };
+  OrganizerDashboard: undefined;
 };

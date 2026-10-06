@@ -174,26 +174,26 @@ All tasks are organized by phase. Each task should be completed and verified bef
 
 ---
 
-## Phase 9 — Competition Creation & Host Management (Option 3)
+## Phase 9 — Competition Creation & Host Management (Option 3) ✅
 
-- [ ] **T9.1** (Backend) Implement `POST /api/v1/competitions`
+- [x] **T9.1** (Backend) Implement `POST /api/v1/competitions`
   - Auth required; automatically set `hostId: req.user._id`
   - Input validation: title, description, category, dates, spots, rules
-- [ ] **T9.2** (Backend) Implement `PUT /api/v1/competitions/:id`
+- [x] **T9.2** (Backend) Implement `PUT /api/v1/competitions/:id`
   - Verify current user is the host
   - Allow updating rules, dates, capacity, banner image, and status
-- [ ] **T9.3** (Backend) Implement `GET /api/v1/competitions/hosted/me` & `GET /api/v1/competitions/:id/admin-stats`
+- [x] **T9.3** (Backend) Implement `GET /api/v1/competitions/hosted/me` & `GET /api/v1/competitions/:id/admin-stats`
   - Return all competitions created by logged-in host
   - Aggregate statistics: registered users count, submissions count, spots filled
-- [ ] **T9.4** (Frontend) Build `CreateCompetitionScreen`
+- [x] **T9.4** (Frontend) Build `CreateCompetitionScreen`
   - Multi-input form: title, category, description, banner URL, dates, spots, prize pool
   - Dynamic rules builder (add / remove rule items)
   - Validation and submission to `POST /api/v1/competitions`
-- [ ] **T9.5** (Frontend) Build `OrganizerDashboardScreen`
+- [x] **T9.5** (Frontend) Build `OrganizerDashboardScreen`
   - View all events hosted by current user
   - Metric chips: total participants, submissions received, competition status
   - Fast actions: manage event, review submissions
-- [ ] **T9.6** (Frontend) Navigation wiring
+- [x] **T9.6** (Frontend) Navigation wiring
   - Add "Host Event" and "Organizer Dashboard" routes to `RootStackParamList`
   - Entry points from Competitions List header and Settings screen
 

@@ -183,14 +183,24 @@ const CompetitionsListScreen: React.FC<Props> = ({ navigation }) => {
           <Text style={styles.greeting}>Hey, {user?.name?.split(' ')[0] ?? 'there'} 👋</Text>
           <Text style={styles.headerTitle}>Competitions</Text>
         </View>
-        <TouchableOpacity
-          style={styles.settingsBtn}
-          onPress={() => navigation.navigate('Settings')}
-          accessibilityRole="button"
-          accessibilityLabel="Open Settings"
-        >
-          <Text style={styles.settingsIcon}>⚙️</Text>
-        </TouchableOpacity>
+        <View style={styles.headerActions}>
+          <TouchableOpacity
+            style={styles.hostBtn}
+            onPress={() => navigation.navigate('OrganizerDashboard')}
+            accessibilityRole="button"
+            accessibilityLabel="Host Dashboard"
+          >
+            <Text style={styles.hostBtnText}>👑 Host</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.settingsBtn}
+            onPress={() => navigation.navigate('Settings')}
+            accessibilityRole="button"
+            accessibilityLabel="Open Settings"
+          >
+            <Text style={styles.settingsIcon}>⚙️</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* ── Search bar (hidden on My Registrations tab) ──────────────────── */}
@@ -315,6 +325,26 @@ const styles = StyleSheet.create({
   },
   greeting: { fontSize: FONT_SIZE.caption, color: COLORS.textMuted, marginBottom: 2 },
   headerTitle: { fontSize: FONT_SIZE.h1, fontWeight: '800', color: COLORS.textPrimary },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+  },
+  hostBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(108, 99, 255, 0.15)',
+    borderWidth: 1,
+    borderColor: COLORS.primary,
+    paddingHorizontal: SPACING.md,
+    height: 42,
+    borderRadius: 21,
+  },
+  hostBtnText: {
+    color: COLORS.primaryLight,
+    fontWeight: '700',
+    fontSize: FONT_SIZE.caption + 1,
+  },
   settingsBtn: {
     width: 42,
     height: 42,

@@ -426,3 +426,163 @@ export const getOrCreateSeedHost = async (): Promise<string> => {
   }
   return (host._id as mongoose.Types.ObjectId).toString();
 };
+
+// ── Create Competition (Phase 9: T9.1) ────────────────────────────────────────
+export interface CreateCompetitionInput {
+  title: string;
+  description: string;
+  category: string;
+  startDate: Date | string;
+  endDate: Date | string;
+  totalSpots: number;
+  entryFee?: number;
+  prizePool?: string;
+  rules?: string[];
+  bannerImage?: string;
+  hostId: string;
+}
+
+export const createCompetition = async (
+  input: CreateCompetitionInput
+): Promise<object> => {
+  const start = new Date(input.startDate);
+  const end = new Date(input.endDate);
+
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+    throw createError('Invalid date format', 400);
+  }
+
+  if (end <= start) {
+    throw createError('End date must be after start date', 400);
+  }
+
+  const created = await Competition.create({
+    title: input.title,
+    description: input.description,
+    category: input.category,
+    startDate: start,
+    endDate: end,
+    totalSpots: input.totalSpots,
+    entryFee: input.entryFee ?? 0,
+    prizePool: input.prizePool ?? 'Certificate of Excellence',
+    rules: input.rules && input.rules.length > 0 ? input.rules : ['Follow standard code of conduct'],
+    bannerImage:
+      input.bannerImage ||
+      'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800',
+    hostId: input.hostId,
+  });
+
+  await created.populate('hostId', 'name avatar email');
+  return serializeCompetition(created);
+};
+
+// ── Update Competition (Phase 9: T9.2) ────────────────────────────────────────
+export interface UpdateCompetitionInput {
+  title?: string;
+  description?: string;
+  category?: string;
+  startDate?: Date | string;
+  endDate?: Date | string;
+  totalSpots?: number;
+  entryFee?: number;
+  prizePool?: string;
+  rules?: string[];
+  bannerImage?: string;
+}
+
+export const updateCompetition = async (
+  competitionId: string,
+  userId: string,
+  data: UpdateCompetitionInput
+): Promise<object> => {
+  const comp = await Competition.findById(competitionId);
+  if (!comp) {
+    throw createError('Competition not found', 404);
+  }
+
+  if (comp.hostId.toString() !== userId) {
+    throw createError('Unauthorized. Only the competition host can edit this event.', 403);
+  }
+
+  const newStart = data.startDate ? new Date(data.startDate) : comp.startDate;
+  const newEnd = data.endDate ? new Date(data.endDate) : comp.endDate;
+
+  if (newEnd <= newStart) {
+    throw createError('End date must be after start date', 400);
+  }
+
+  if (data.totalSpots !== undefined && data.totalSpots < comp.registeredCount) {
+    throw createError(
+      `Cannot set total spots to ${data.totalSpots} because ${comp.registeredCount} participants are already registered.`,
+      400
+    );
+  }
+
+  if (data.title) comp.title = data.title;
+  if (data.description) comp.description = data.description;
+  if (data.category) comp.category = data.category;
+  if (data.startDate) comp.startDate = newStart;
+  if (data.endDate) comp.endDate = newEnd;
+  if (data.totalSpots !== undefined) comp.totalSpots = data.totalSpots;
+  if (data.entryFee !== undefined) comp.entryFee = data.entryFee;
+  if (data.prizePool !== undefined) comp.prizePool = data.prizePool;
+  if (data.rules !== undefined) comp.rules = data.rules;
+  if (data.bannerImage !== undefined) comp.bannerImage = data.bannerImage;
+
+  await comp.save();
+  await comp.populate('hostId', 'name avatar email');
+  return serializeCompetition(comp);
+};
+
+// ── List Hosted Competitions (Phase 9: T9.3) ──────────────────────────────────
+export const listHostedCompetitions = async (userId: string): Promise<object[]> => {
+  const comps = await Competition.find({ hostId: userId })
+    .populate('hostId', 'name avatar email')
+    .sort({ createdAt: -1 });
+
+  return comps.map((c) => serializeCompetition(c));
+};
+
+// ── Get Host Admin Stats (Phase 9: T9.3) ───────────────────────────────────────
+export const getCompetitionAdminStats = async (
+  competitionId: string,
+  userId: string
+): Promise<{
+  competition: object;
+  stats: {
+    totalSpots: number;
+    registeredCount: number;
+    spotsRemaining: number;
+    status: string;
+    submissionCount: number;
+  };
+}> => {
+  const comp = await Competition.findById(competitionId).populate('hostId', 'name avatar email');
+  if (!comp) {
+    throw createError('Competition not found', 404);
+  }
+
+  const hostIdStr = (comp.hostId as any)._id
+    ? (comp.hostId as any)._id.toString()
+    : comp.hostId.toString();
+
+  if (hostIdStr !== userId) {
+    throw createError('Unauthorized. Only the competition host can view admin stats.', 403);
+  }
+
+  let submissionCount = 0;
+  if (mongoose.models.Submission) {
+    submissionCount = await mongoose.models.Submission.countDocuments({ competitionId });
+  }
+
+  return {
+    competition: serializeCompetition(comp),
+    stats: {
+      totalSpots: comp.totalSpots,
+      registeredCount: comp.registeredCount,
+      spotsRemaining: Math.max(0, comp.totalSpots - comp.registeredCount),
+      status: comp.computedStatus,
+      submissionCount,
+    },
+  };
+};

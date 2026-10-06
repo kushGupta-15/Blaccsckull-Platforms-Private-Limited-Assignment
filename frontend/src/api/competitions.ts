@@ -67,3 +67,41 @@ export const fetchMyRegistrations = async (
   >('/users/me/registrations', { params });
   return data.data;
 };
+
+// ── Host / Organizer Operations (Phase 9) ────────────────────────────────────
+export const createCompetition = async (
+  input: import('../types').CreateCompetitionInput
+): Promise<ICompetition> => {
+  const { data } = await apiClient.post<ApiSuccess<ICompetition>>(
+    '/competitions',
+    input
+  );
+  return data.data;
+};
+
+export const updateCompetition = async (
+  id: string,
+  input: Partial<import('../types').CreateCompetitionInput>
+): Promise<ICompetition> => {
+  const { data } = await apiClient.put<ApiSuccess<ICompetition>>(
+    `/competitions/${id}`,
+    input
+  );
+  return data.data;
+};
+
+export const fetchHostedCompetitions = async (): Promise<ICompetition[]> => {
+  const { data } = await apiClient.get<ApiSuccess<ICompetition[]>>(
+    '/competitions/hosted/me'
+  );
+  return data.data;
+};
+
+export const fetchCompetitionAdminStats = async (
+  id: string
+): Promise<import('../types').CompetitionAdminStats> => {
+  const { data } = await apiClient.get<
+    ApiSuccess<import('../types').CompetitionAdminStats>
+  >(`/competitions/${id}/admin-stats`);
+  return data.data;
+};
