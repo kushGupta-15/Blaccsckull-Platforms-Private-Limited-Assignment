@@ -95,6 +95,44 @@ export interface CompetitionAdminStats {
   };
 }
 
+// ── Submissions & Showcase (Phases 10 & 11) ──────────────────────────────────
+export type SubmissionStatus = 'submitted' | 'under_review' | 'evaluated';
+
+export interface ISubmission {
+  _id: string;
+  competitionId: string;
+  userId: Pick<IUser, '_id' | 'name' | 'email' | 'avatar'>;
+  title: string;
+  description: string;
+  repositoryUrl: string;
+  demoUrl?: string;
+  mediaUrl?: string;
+  status: SubmissionStatus;
+  score?: number;
+  feedback?: string;
+  isWinner: boolean;
+  awardRank?: 1 | 2 | 3;
+  upvoteCount: number;
+  hasUpvoted?: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateSubmissionInput {
+  title: string;
+  description: string;
+  repositoryUrl: string;
+  demoUrl?: string;
+  mediaUrl?: string;
+}
+
+export interface EvaluateSubmissionInput {
+  score?: number;
+  feedback?: string;
+  awardRank?: 1 | 2 | 3;
+  isWinner?: boolean;
+}
+
 // ── Navigation ────────────────────────────────────────────────────────────────
 export type RootStackParamList = {
   Login: undefined;
@@ -104,4 +142,9 @@ export type RootStackParamList = {
   Settings: undefined;
   CreateCompetition: { competitionId?: string };
   OrganizerDashboard: undefined;
+  SubmitProject: {
+    competitionId: string;
+    competitionTitle: string;
+    existingSubmission?: ISubmission;
+  };
 };

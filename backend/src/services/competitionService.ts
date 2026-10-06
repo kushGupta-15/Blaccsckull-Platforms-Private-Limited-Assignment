@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import Competition, { ICompetitionDocument } from '../models/Competition';
 import Registration from '../models/Registration';
 import User from '../models/User';
+import Submission from '../models/Submission';
 import { createError } from '../middleware/errorHandler';
 import { COMPETITION_STATUS, REGISTRATION_STATUS, MAX_PAGE_SIZE } from '../utils/constants';
 
@@ -47,13 +48,10 @@ export const listCompetitions = async (
 
   // Fetch all matching docs (status is virtual, so we filter post-query for now)
   // For production at scale, status would be stored and indexed in the DB.
-  const [all, _total] = await Promise.all([
-    Competition.find(filter)
-      .populate('hostId', 'name avatar email')
-      .sort({ startDate: -1 })
-      .lean({ virtuals: true }),
-    Competition.countDocuments(filter),
-  ]);
+  const all = await Competition.find(filter)
+    .populate('hostId', 'name avatar email')
+    .sort({ startDate: -1 })
+    .lean({ virtuals: true });
 
   // Filter by computed status if requested
   const filtered = status
@@ -62,7 +60,7 @@ export const listCompetitions = async (
         let cs: string;
         if (now < new Date(c.startDate as unknown as string)) cs = COMPETITION_STATUS.UPCOMING;
         else if (now > new Date(c.endDate as unknown as string)) cs = COMPETITION_STATUS.ENDED;
-        else if ((c.registeredCount as number) >= (c.totalSpots as number)) cs = COMPETITION_STATUS.FULL;
+        else if (c.registeredCount >= c.totalSpots) cs = COMPETITION_STATUS.FULL;
         else cs = COMPETITION_STATUS.ACTIVE;
         return cs === status;
       })
@@ -77,7 +75,7 @@ export const listCompetitions = async (
     let cs: string;
     if (now < new Date(c.startDate as unknown as string)) cs = COMPETITION_STATUS.UPCOMING;
     else if (now > new Date(c.endDate as unknown as string)) cs = COMPETITION_STATUS.ENDED;
-    else if ((c.registeredCount as number) >= (c.totalSpots as number)) cs = COMPETITION_STATUS.FULL;
+    else if (c.registeredCount >= c.totalSpots) cs = COMPETITION_STATUS.FULL;
     else cs = COMPETITION_STATUS.ACTIVE;
 
     const record = c as Record<string, unknown>;
@@ -413,7 +411,7 @@ export const getUserRegistrationStatus = async (
 
 // ── Ensure seed host exists ───────────────────────────────────────────────────
 export const getOrCreateSeedHost = async (): Promise<string> => {
-  let host = await User.findOne({ email: 'admin@feedants.com' }).lean();
+  const host = await User.findOne({ email: 'admin@feedants.com' }).lean();
   if (!host) {
     const bcrypt = await import('bcryptjs');
     const passwordHash = await bcrypt.hash('Admin1234', 12);
@@ -424,7 +422,7 @@ export const getOrCreateSeedHost = async (): Promise<string> => {
     });
     return created._id.toString();
   }
-  return (host._id as mongoose.Types.ObjectId).toString();
+  return host._id.toString();
 };
 
 // ── Create Competition (Phase 9: T9.1) ────────────────────────────────────────
@@ -562,18 +560,16 @@ export const getCompetitionAdminStats = async (
     throw createError('Competition not found', 404);
   }
 
-  const hostIdStr = (comp.hostId as any)._id
-    ? (comp.hostId as any)._id.toString()
+  const populatedHost = comp.hostId as unknown as { _id?: mongoose.Types.ObjectId };
+  const hostIdStr = populatedHost._id
+    ? populatedHost._id.toString()
     : comp.hostId.toString();
 
   if (hostIdStr !== userId) {
     throw createError('Unauthorized. Only the competition host can view admin stats.', 403);
   }
 
-  let submissionCount = 0;
-  if (mongoose.models.Submission) {
-    submissionCount = await mongoose.models.Submission.countDocuments({ competitionId });
-  }
+  const submissionCount = await Submission.countDocuments({ competitionId });
 
   return {
     competition: serializeCompetition(comp),

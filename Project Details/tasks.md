@@ -199,41 +199,41 @@ All tasks are organized by phase. Each task should be completed and verified bef
 
 ---
 
-## Phase 10 — Project Submission & Review System (Option 1)
+## Phase 10 — Project Submission & Review System (Option 1) ✅
 
-- [ ] **T10.1** (Backend) Create `Submission` Mongoose model & schema
+- [x] **T10.1** (Backend) Create `Submission` Mongoose model & schema
   - Fields: competitionId, userId, title, description, repositoryUrl, demoUrl, mediaUrl, status, score, feedback, isWinner, awardRank, upvotes, upvoteCount
   - Compound unique index on `{ competitionId, userId }` (one submission per participant)
-- [ ] **T10.2** (Backend) Implement `POST /api/v1/competitions/:id/submissions`
+- [x] **T10.2** (Backend) Implement `POST /api/v1/competitions/:id/submissions`
   - Auth required; verify user has an active registration
   - Validate repository URL, title, description
   - Create or update submission before deadline
-- [ ] **T10.3** (Backend) Implement `GET /api/v1/competitions/:id/submissions` & `GET /api/v1/competitions/:id/submissions/mine`
+- [x] **T10.3** (Backend) Implement `GET /api/v1/competitions/:id/submissions` & `GET /api/v1/competitions/:id/submissions/mine`
   - Paginated list of submissions with author details and upvote counts
   - Endpoint for participant to view their own submission status
-- [ ] **T10.4** (Backend) Implement `POST /api/v1/submissions/:id/upvote`
+- [x] **T10.4** (Backend) Implement `POST /api/v1/submissions/:id/upvote`
   - Atomic upvote toggle (`$addToSet` / `$pull` + `$inc` upvoteCount)
-- [ ] **T10.5** (Backend) Implement `PUT /api/v1/submissions/:id/evaluate` & `POST /api/v1/competitions/:id/finalize-winners`
+- [x] **T10.5** (Backend) Implement `PUT /api/v1/submissions/:id/evaluate` & `POST /api/v1/competitions/:id/finalize-winners`
   - Host authorization check
   - Grade submissions (score 0–100, feedback, assign winner podium rank)
-- [ ] **T10.6** (Frontend) Build `SubmitProjectModal` / `SubmitProjectScreen`
+- [x] **T10.6** (Frontend) Build `SubmitProjectModal` / `SubmitProjectScreen`
   - Form: title, description, GitHub repository URL, live demo link, media URL
   - Client-side URL validation & instant feedback
-- [ ] **T10.7** (Frontend) Build `SubmissionCard` component
+- [x] **T10.7** (Frontend) Build `SubmissionCard` component
   - Author avatar & name, project title, summary, GitHub & demo links, upvote button with count, winner badge
-- [ ] **T10.8** (Frontend) Integrate Submissions into `CompetitionDetailsScreen`
+- [x] **T10.8** (Frontend) Integrate Submissions into `CompetitionDetailsScreen`
   - Segmented control / Tab bar: "Overview" vs "Submissions"
   - "Submit Project" action button for registered participants
 
 ---
 
-## Phase 11 — Winners Showcase, Host Evaluation & Final Polish
+## Phase 11 — Winners Showcase, Host Evaluation & Final Polish ✅
 
-- [ ] **T11.1** (Frontend) Build `WinnersPodium` component
+- [x] **T11.1** (Frontend) Build `WinnersPodium` component
   - Celebratory podium display (🥇 1st, 🥈 2nd, 🥉 3rd) on competition details when winners are declared
-- [ ] **T11.2** (Frontend) Build Host Evaluation interface in Organizer Dashboard
+- [x] **T11.2** (Frontend) Build Host Evaluation interface in Organizer Dashboard
   - Host can review each submission, enter a score/feedback, and select podium winners
-- [ ] **T11.3** End-to-end verification across Mobile and Web
+- [x] **T11.3** End-to-end verification across Mobile and Web
   - Test complete lifecycle: Create Competition → Register → Submit Project → Upvote → Host Evaluation → Winner Celebration
   - Verify TypeScript compilation and responsive UI on mobile and web
 

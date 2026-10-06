@@ -21,3 +21,12 @@ export type RegistrationStatus =
 
 export const DEFAULT_PAGE_SIZE = 20;
 export const MAX_PAGE_SIZE = 100;
+
+export const SUBMISSION_STATUS = {
+  SUBMITTED: 'submitted',
+  UNDER_REVIEW: 'under_review',
+  EVALUATED: 'evaluated',
+} as const;
+
+export type SubmissionStatus =
+  (typeof SUBMISSION_STATUS)[keyof typeof SUBMISSION_STATUS];

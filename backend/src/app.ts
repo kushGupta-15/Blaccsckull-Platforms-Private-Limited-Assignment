@@ -8,6 +8,7 @@ import connectDB from './config/database';
 import indexRouter from './routes/index';
 import authRouter from './routes/auth';
 import competitionsRouter from './routes/competitions';
+import submissionsRouter from './routes/submissions';
 import usersRouter from './routes/users';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { seedCompetitions, getOrCreateSeedHost } from './services/competitionService';
@@ -54,6 +55,7 @@ app.get('/', (_req, res) => {
     endpoints: {
       health: '/api/v1/health',
       competitions: '/api/v1/competitions',
+      submissions: '/api/v1/submissions',
       auth: '/api/v1/auth',
     },
   });
@@ -63,6 +65,7 @@ app.get('/', (_req, res) => {
 app.use('/api/v1', indexRouter);
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/competitions', competitionsRouter);
+app.use('/api/v1/submissions', submissionsRouter);
 app.use('/api/v1/users', usersRouter);
 
 // ── 404 & Error Handlers ───────────────────────────────────────────────────────

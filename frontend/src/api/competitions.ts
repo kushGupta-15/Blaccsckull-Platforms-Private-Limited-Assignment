@@ -105,3 +105,71 @@ export const fetchCompetitionAdminStats = async (
   >(`/competitions/${id}/admin-stats`);
   return data.data;
 };
+
+// ── Submissions & Winners Operations (Phase 10 & 11) ─────────────────────────
+
+export const submitProject = async (
+  competitionId: string,
+  input: import('../types').CreateSubmissionInput
+): Promise<import('../types').ISubmission> => {
+  const { data } = await apiClient.post<
+    ApiSuccess<import('../types').ISubmission>
+  >(`/competitions/${competitionId}/submissions`, input);
+  return data.data;
+};
+
+export const fetchSubmissions = async (
+  competitionId: string
+): Promise<{ items: import('../types').ISubmission[]; total: number }> => {
+  const { data } = await apiClient.get<
+    ApiSuccess<{ items: import('../types').ISubmission[]; total: number }>
+  >(`/competitions/${competitionId}/submissions`);
+  return data.data;
+};
+
+export const fetchMySubmission = async (
+  competitionId: string
+): Promise<import('../types').ISubmission | null> => {
+  const { data } = await apiClient.get<
+    ApiSuccess<import('../types').ISubmission | null>
+  >(`/competitions/${competitionId}/submissions/mine`);
+  return data.data;
+};
+
+export const toggleUpvoteSubmission = async (
+  submissionId: string
+): Promise<{ hasUpvoted: boolean; upvoteCount: number }> => {
+  const { data } = await apiClient.post<
+    ApiSuccess<{ hasUpvoted: boolean; upvoteCount: number }>
+  >(`/submissions/${submissionId}/upvote`);
+  return data.data;
+};
+
+export const evaluateSubmission = async (
+  submissionId: string,
+  input: import('../types').EvaluateSubmissionInput
+): Promise<import('../types').ISubmission> => {
+  const { data } = await apiClient.put<
+    ApiSuccess<import('../types').ISubmission>
+  >(`/submissions/${submissionId}/evaluate`, input);
+  return data.data;
+};
+
+export const finalizeWinners = async (
+  competitionId: string,
+  winners: Array<{ submissionId: string; rank: 1 | 2 | 3 }>
+): Promise<import('../types').ISubmission[]> => {
+  const { data } = await apiClient.post<
+    ApiSuccess<import('../types').ISubmission[]>
+  >(`/competitions/${competitionId}/finalize-winners`, { winners });
+  return data.data;
+};
+
+export const fetchWinners = async (
+  competitionId: string
+): Promise<import('../types').ISubmission[]> => {
+  const { data } = await apiClient.get<
+    ApiSuccess<import('../types').ISubmission[]>
+  >(`/competitions/${competitionId}/winners`);
+  return data.data;
+};

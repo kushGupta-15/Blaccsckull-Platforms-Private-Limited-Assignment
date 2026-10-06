@@ -44,6 +44,7 @@ export const COLORS = {
   // Misc
   border: '#2A2A45',
   overlay: 'rgba(13, 13, 26, 0.85)',
+  bgCard: '#1A1A2E',
 } as const;
 
 // Spacing (4pt grid)
@@ -53,6 +54,7 @@ export const SPACING = {
   md: 16,
   lg: 24,
   xl: 32,
+  xxl: 48,
   '2xl': 48,
   '3xl': 64,
 } as const;
@@ -66,4 +68,11 @@ export const FONT_SIZE = {
   body: 14,
   caption: 12,
   badge: 11,
+  // Standard aliases
+  xs: 12,
+  sm: 14,
+  md: 16,
+  lg: 18,
+  xl: 22,
+  xxl: 28,
 } as const;
