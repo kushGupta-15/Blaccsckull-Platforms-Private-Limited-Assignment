@@ -26,7 +26,7 @@
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "apiBaseUrl": "http://10.22.1.21:5000/api/v1"
+      "apiBaseUrl": "https://blaccsckull-platforms-private-limited.onrender.com/api/v1"
     },
     "plugins": [
       "expo-secure-store"
