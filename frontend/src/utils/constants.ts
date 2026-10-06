@@ -1,10 +1,17 @@
 import Constants from 'expo-constants';
 
 // API base URL — prioritize EXPO_PUBLIC_API_URL, then app.json extra, then fallback
-export const API_BASE_URL: string =
-  process.env.EXPO_PUBLIC_API_URL ||
-  (Constants.expoConfig?.extra as { apiBaseUrl?: string } | undefined)?.apiBaseUrl ||
-  'http://localhost:5000/api/v1';
+const getNormalizedApiUrl = (): string => {
+  const raw =
+    process.env.EXPO_PUBLIC_API_URL ||
+    (Constants.expoConfig?.extra as { apiBaseUrl?: string } | undefined)?.apiBaseUrl ||
+    'http://localhost:5000/api/v1';
+
+  const clean = raw.trim().replace(/\/+$/, '');
+  return clean.endsWith('/api/v1') ? clean : `${clean}/api/v1`;
+};
+
+export const API_BASE_URL: string = getNormalizedApiUrl();
 
 export const SECURE_STORE_KEYS = {
   AUTH_TOKEN: 'feedants_auth_token',
