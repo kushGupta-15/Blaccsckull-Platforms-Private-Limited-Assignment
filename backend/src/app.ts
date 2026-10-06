@@ -45,6 +45,20 @@ if (process.env.NODE_ENV !== 'test') {
   app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 }
 
+// ── Root Endpoint ──────────────────────────────────────────────────────────────
+app.get('/', (_req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Feedants Backend API is live!',
+    version: '1.0.0',
+    endpoints: {
+      health: '/api/v1/health',
+      competitions: '/api/v1/competitions',
+      auth: '/api/v1/auth',
+    },
+  });
+});
+
 // ── Routes ─────────────────────────────────────────────────────────────────────
 app.use('/api/v1', indexRouter);
 app.use('/api/v1/auth', authRouter);
