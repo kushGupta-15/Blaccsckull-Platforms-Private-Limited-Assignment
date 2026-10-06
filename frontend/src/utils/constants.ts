@@ -5,7 +5,7 @@ const getNormalizedApiUrl = (): string => {
   const raw =
     process.env.EXPO_PUBLIC_API_URL ||
     (Constants.expoConfig?.extra as { apiBaseUrl?: string } | undefined)?.apiBaseUrl ||
-    'http://localhost:5000/api/v1';
+    'https://blaccsckull-platforms-private-limited.onrender.com/api/v1';
 
   const clean = raw.trim().replace(/\/+$/, '');
   return clean.endsWith('/api/v1') ? clean : `${clean}/api/v1`;
