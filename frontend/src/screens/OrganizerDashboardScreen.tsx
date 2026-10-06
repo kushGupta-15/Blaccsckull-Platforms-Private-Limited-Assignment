@@ -8,7 +8,6 @@ import {
   RefreshControl,
   Image,
   ActivityIndicator,
-  Alert,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
@@ -24,17 +23,24 @@ const OrganizerDashboardScreen: React.FC<Props> = ({ navigation }) => {
   const [competitions, setCompetitions] = useState<ICompetition[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [serverNotice, setServerNotice] = useState<string | null>(null);
 
   const loadData = useCallback(async () => {
     try {
+      setServerNotice(null);
       const data = await fetchHostedCompetitions();
       setCompetitions(data);
     } catch (err: any) {
       console.warn('Failed to load hosted competitions:', err);
-      Alert.alert(
-        'Error',
-        err.response?.data?.error || 'Failed to load your hosted events.'
-      );
+      if (err.response?.status === 404) {
+        setServerNotice(
+          'Remote backend is currently finishing deployment with the latest host routes.'
+        );
+      } else {
+        setServerNotice(
+          err.response?.data?.error || 'Failed to load your hosted events.'
+        );
+      }
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -109,6 +115,12 @@ const OrganizerDashboardScreen: React.FC<Props> = ({ navigation }) => {
           <Text style={styles.statLabel}>Total Spots</Text>
         </View>
       </View>
+
+      {serverNotice ? (
+        <View style={styles.noticeBox}>
+          <Text style={styles.noticeText}>ℹ️ {serverNotice}</Text>
+        </View>
+      ) : null}
 
       <Text style={styles.sectionHeading}>Your Hosted Competitions</Text>
     </View>
@@ -470,6 +482,20 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: '700',
     fontSize: FONT_SIZE.body,
+  },
+  noticeBox: {
+    backgroundColor: 'rgba(59, 130, 246, 0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(59, 130, 246, 0.3)',
+    borderRadius: 8,
+    padding: SPACING.md,
+    marginTop: SPACING.md,
+  },
+  noticeText: {
+    color: '#93C5FD',
+    fontSize: FONT_SIZE.caption,
+    textAlign: 'center',
+    lineHeight: 18,
   },
 });
 

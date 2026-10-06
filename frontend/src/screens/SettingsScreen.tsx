@@ -5,13 +5,13 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Alert,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RootStackParamList } from '../types';
 import { COLORS, FONT_SIZE, SPACING } from '../utils/constants';
 import { useAuthStore } from '../store/authStore';
+import { showAlert } from '../utils/alert';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
 
@@ -29,7 +29,7 @@ const SettingsScreen: React.FC<Props> = ({ navigation }) => {
   const logout = useAuthStore((s) => s.logout);
 
   const handleLogout = (): void => {
-    Alert.alert(
+    showAlert(
       'Log Out',
       'Are you sure you want to log out?',
       [

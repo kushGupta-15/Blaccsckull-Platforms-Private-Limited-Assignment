@@ -5,11 +5,11 @@ import {
   StyleSheet,
   TouchableOpacity,
   Linking,
-  Alert,
 } from 'react-native';
 
 import { ISubmission } from '../types';
 import { COLORS, FONT_SIZE, SPACING } from '../utils/constants';
+import { showAlert } from '../utils/alert';
 
 interface Props {
   winners: ISubmission[];
@@ -27,10 +27,10 @@ const WinnersPodium: React.FC<Props> = ({ winners }) => {
       if (can) {
         await Linking.openURL(url);
       } else {
-        Alert.alert('Unable to Open Link', url);
+        showAlert('Unable to Open Link', url);
       }
     } catch {
-      Alert.alert('Error', 'Could not open link');
+      showAlert('Error', 'Could not open link');
     }
   };
 

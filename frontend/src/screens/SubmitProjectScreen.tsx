@@ -5,7 +5,6 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Alert,
   Platform,
   KeyboardAvoidingView,
   ActivityIndicator,
@@ -17,6 +16,7 @@ import { COLORS, FONT_SIZE, SPACING } from '../utils/constants';
 import FormInput from '../components/FormInput';
 import PrimaryButton from '../components/PrimaryButton';
 import { submitProject, fetchMySubmission } from '../api/competitions';
+import { showAlert } from '../utils/alert';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SubmitProject'>;
 
@@ -108,7 +108,7 @@ const SubmitProjectScreen: React.FC<Props> = ({ route, navigation }) => {
         mediaUrl: mediaUrl.trim() || undefined,
       });
 
-      Alert.alert(
+      showAlert(
         'Success! 🚀',
         'Your project has been successfully submitted for review.',
         [{ text: 'OK', onPress: () => navigation.goBack() }]
@@ -118,7 +118,7 @@ const SubmitProjectScreen: React.FC<Props> = ({ route, navigation }) => {
         err instanceof Error
           ? err.message
           : 'Failed to submit project. Please check requirements and try again.';
-      Alert.alert('Submission Failed', msg);
+      showAlert('Submission Failed', msg);
     } finally {
       setLoading(false);
     }

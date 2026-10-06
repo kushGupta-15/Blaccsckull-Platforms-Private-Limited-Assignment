@@ -7,7 +7,6 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Platform,
-  Alert,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AxiosError } from 'axios';
@@ -18,6 +17,7 @@ import { loginUser } from '../api/auth';
 import { useAuthStore } from '../store/authStore';
 import FormInput from '../components/FormInput';
 import PrimaryButton from '../components/PrimaryButton';
+import { showAlert } from '../utils/alert';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
@@ -57,7 +57,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       const axiosErr = err as AxiosError<ApiError>;
       const message =
         axiosErr.response?.data?.error ?? 'Login failed. Please try again.';
-      Alert.alert('Login Failed', message);
+      showAlert('Login Failed', message);
     } finally {
       setLoading(false);
     }

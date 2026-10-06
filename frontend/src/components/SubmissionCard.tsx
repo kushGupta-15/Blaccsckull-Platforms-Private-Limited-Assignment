@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   Linking,
-  Alert,
   TextInput,
   ActivityIndicator,
 } from 'react-native';
@@ -13,6 +12,7 @@ import {
 import { ISubmission, EvaluateSubmissionInput } from '../types';
 import { COLORS, FONT_SIZE, SPACING } from '../utils/constants';
 import { toggleUpvoteSubmission, evaluateSubmission } from '../api/competitions';
+import { showAlert } from '../utils/alert';
 
 interface Props {
   submission: ISubmission;
@@ -49,10 +49,10 @@ const SubmissionCard: React.FC<Props> = ({
       if (can) {
         await Linking.openURL(url);
       } else {
-        Alert.alert('Unable to Open Link', url);
+        showAlert('Unable to Open Link', url);
       }
     } catch {
-      Alert.alert('Error', 'Could not launch URL.');
+      showAlert('Error', 'Could not launch URL.');
     }
   };
 
@@ -73,7 +73,7 @@ const SubmissionCard: React.FC<Props> = ({
       // Revert on failure
       setUpvoted(!nextState);
       setUpvoteCount((prev) => (!nextState ? prev + 1 : Math.max(0, prev - 1)));
-      Alert.alert('Authentication Required', 'Please log in to upvote projects.');
+      showAlert('Authentication Required', 'Please log in to upvote projects.');
     } finally {
       setUpvoting(false);
     }
@@ -89,7 +89,7 @@ const SubmissionCard: React.FC<Props> = ({
         if (!isNaN(parsed) && parsed >= 0 && parsed <= 100) {
           payload.score = parsed;
         } else {
-          Alert.alert('Invalid Score', 'Score must be a number between 0 and 100.');
+          showAlert('Invalid Score', 'Score must be a number between 0 and 100.');
           setEvaluating(false);
           return;
         }
@@ -105,12 +105,12 @@ const SubmissionCard: React.FC<Props> = ({
       }
 
       await evaluateSubmission(submission._id, payload);
-      Alert.alert('Success', 'Project evaluated successfully!');
+      showAlert('Success', 'Project evaluated successfully!');
       setShowEvalForm(false);
       onUpdated?.();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Evaluation failed';
-      Alert.alert('Error', msg);
+      showAlert('Error', msg);
     } finally {
       setEvaluating(false);
     }

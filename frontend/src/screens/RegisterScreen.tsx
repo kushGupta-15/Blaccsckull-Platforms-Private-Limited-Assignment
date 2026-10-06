@@ -7,7 +7,6 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Platform,
-  Alert,
   TextInput,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -19,6 +18,7 @@ import { registerUser } from '../api/auth';
 import { useAuthStore } from '../store/authStore';
 import FormInput from '../components/FormInput';
 import PrimaryButton from '../components/PrimaryButton';
+import { showAlert } from '../utils/alert';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Register'>;
 
@@ -87,7 +87,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
           ? serverDetails.details.join('\n')
           : (axiosErr.response?.data as ApiError | undefined)?.error ??
             'Registration failed. Please try again.';
-      Alert.alert('Registration Failed', message);
+      showAlert('Registration Failed', message);
     } finally {
       setLoading(false);
     }

@@ -5,7 +5,6 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Alert,
   Platform,
   KeyboardAvoidingView,
   ActivityIndicator,
@@ -18,6 +17,7 @@ import { RootStackParamList, CreateCompetitionInput } from '../types';
 import { COLORS, FONT_SIZE, SPACING } from '../utils/constants';
 import FormInput from '../components/FormInput';
 import PrimaryButton from '../components/PrimaryButton';
+import { showAlert } from '../utils/alert';
 import {
   createCompetition,
   updateCompetition,
@@ -83,6 +83,24 @@ const CreateCompetitionScreen: React.FC<Props> = ({ route, navigation }) => {
 
   const [loading, setLoading] = useState(false);
   const [fetchingExisting, setFetchingExisting] = useState(!!editingId);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  // Auto-fill template for rapid demonstration
+  const handleAutofillDemoData = () => {
+    setTitle('NextGen Full-Stack AI Hackathon');
+    setDescription(
+      'Build an end-to-end intelligent web and mobile solution using cutting-edge AI, clean software architecture, and polished UI design. Submissions will be evaluated by the community and organizers.'
+    );
+    setCategory('AI / ML');
+    setTotalSpots('100');
+    setEntryFee('0');
+    setPrizePool('₹1,00,000 + Tech Swag & Certificate');
+    setStartDateStr(dayjs().add(1, 'day').format('YYYY-MM-DDTHH:mm'));
+    setEndDateStr(dayjs().add(7, 'day').format('YYYY-MM-DDTHH:mm'));
+    setErrors({});
+    setSubmitError(null);
+  };
 
   // Fetch existing details if editing
   useEffect(() => {
@@ -103,7 +121,7 @@ const CreateCompetitionScreen: React.FC<Props> = ({ route, navigation }) => {
         setEndDateStr(dayjs(data.endDate).format('YYYY-MM-DDTHH:mm'));
         if (data.rules && data.rules.length > 0) setRules(data.rules);
       } catch (err: any) {
-        Alert.alert(
+        showAlert(
           'Error',
           err.response?.data?.error || 'Failed to load competition details'
         );
@@ -133,37 +151,52 @@ const CreateCompetitionScreen: React.FC<Props> = ({ route, navigation }) => {
     setEndDateStr(e.format('YYYY-MM-DDTHH:mm'));
   };
 
-  const handleSubmit = async () => {
+  const validate = (): boolean => {
+    const errs: Record<string, string> = {};
     if (!title.trim() || title.trim().length < 3) {
-      Alert.alert('Validation Error', 'Title must be at least 3 characters.');
-      return;
+      errs.title = 'Title must be at least 3 characters.';
     }
-    if (!description.trim()) {
-      Alert.alert('Validation Error', 'Please provide a description.');
-      return;
+    if (!description.trim() || description.trim().length < 10) {
+      errs.description = 'Description must be at least 10 characters.';
     }
     const spotsNum = parseInt(totalSpots, 10);
     if (isNaN(spotsNum) || spotsNum < 1) {
-      Alert.alert('Validation Error', 'Total spots must be at least 1.');
-      return;
+      errs.totalSpots = 'Total spots must be at least 1.';
     }
     const feeNum = parseFloat(entryFee);
     if (isNaN(feeNum) || feeNum < 0) {
-      Alert.alert('Validation Error', 'Entry fee cannot be negative.');
-      return;
+      errs.entryFee = 'Entry fee cannot be negative.';
     }
 
     const sDate = new Date(startDateStr);
     const eDate = new Date(endDateStr);
 
     if (isNaN(sDate.getTime()) || isNaN(eDate.getTime())) {
-      Alert.alert('Validation Error', 'Invalid start or end date format.');
+      errs.dates = 'Invalid start or end date format.';
+    } else if (eDate <= sDate) {
+      errs.dates = 'End date must be after start date.';
+    }
+
+    setErrors(errs);
+    if (Object.keys(errs).length > 0) {
+      const firstMsg = Object.values(errs)[0];
+      setSubmitError(firstMsg);
+      showAlert('Validation Error', firstMsg);
+      return false;
+    }
+    setSubmitError(null);
+    return true;
+  };
+
+  const handleSubmit = async () => {
+    if (!validate()) {
       return;
     }
-    if (eDate <= sDate) {
-      Alert.alert('Validation Error', 'End date must be after start date.');
-      return;
-    }
+
+    const spotsNum = parseInt(totalSpots, 10);
+    const feeNum = parseFloat(entryFee);
+    const sDate = new Date(startDateStr);
+    const eDate = new Date(endDateStr);
 
     const payload: CreateCompetitionInput = {
       title: title.trim(),
@@ -180,13 +213,15 @@ const CreateCompetitionScreen: React.FC<Props> = ({ route, navigation }) => {
 
     try {
       setLoading(true);
+      setSubmitError(null);
       if (editingId) {
         await updateCompetition(editingId, payload);
-        Alert.alert('Success', 'Competition updated successfully!');
-        navigation.goBack();
+        showAlert('Success', 'Competition updated successfully!', [
+          { text: 'OK', onPress: () => navigation.goBack() },
+        ]);
       } else {
         const created = await createCompetition(payload);
-        Alert.alert('Success 🎉', 'Competition created and live!', [
+        showAlert('Success 🎉', 'Competition created and live!', [
           {
             text: 'View Competition',
             onPress: () =>
@@ -201,11 +236,21 @@ const CreateCompetitionScreen: React.FC<Props> = ({ route, navigation }) => {
         ]);
       }
     } catch (err: any) {
-      const msg =
+      let msg =
         err.response?.data?.error ||
         err.message ||
         'Failed to save competition. Please try again.';
-      Alert.alert('Error', msg);
+
+      if (
+        err.response?.status === 404 ||
+        msg.toLowerCase().includes('route not found')
+      ) {
+        msg =
+          'Route Not Found (404): The backend server is currently finishing its deployment with the new routes. Please make sure the latest commit is deployed on dashboard.render.com.';
+      }
+
+      setSubmitError(msg);
+      showAlert('Publish Error', msg);
     } finally {
       setLoading(false);
     }
@@ -235,7 +280,7 @@ const CreateCompetitionScreen: React.FC<Props> = ({ route, navigation }) => {
           >
             <Text style={styles.backButtonText}>←</Text>
           </TouchableOpacity>
-          <View>
+          <View style={{ flex: 1 }}>
             <Text style={styles.headerTitle}>
               {editingId ? 'Edit Competition' : 'Create Competition'}
             </Text>
@@ -245,6 +290,15 @@ const CreateCompetitionScreen: React.FC<Props> = ({ route, navigation }) => {
                 : 'Host a new challenge for participants'}
             </Text>
           </View>
+          {!editingId ? (
+            <TouchableOpacity
+              style={styles.autofillBtn}
+              onPress={handleAutofillDemoData}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.autofillBtnText}>✨ Auto-Fill</Text>
+            </TouchableOpacity>
+          ) : null}
         </View>
 
         {/* Section: Basic Details */}
@@ -254,8 +308,12 @@ const CreateCompetitionScreen: React.FC<Props> = ({ route, navigation }) => {
           <FormInput
             label="Competition Title *"
             value={title}
-            onChangeText={setTitle}
+            onChangeText={(t) => {
+              setTitle(t);
+              if (errors.title) setErrors((prev) => ({ ...prev, title: '' }));
+            }}
             placeholder="e.g. NextGen AI Mobile Hackathon"
+            error={errors.title}
           />
 
           {/* Category Chips */}
@@ -285,10 +343,14 @@ const CreateCompetitionScreen: React.FC<Props> = ({ route, navigation }) => {
           <FormInput
             label="Description *"
             value={description}
-            onChangeText={setDescription}
+            onChangeText={(d) => {
+              setDescription(d);
+              if (errors.description) setErrors((prev) => ({ ...prev, description: '' }));
+            }}
             placeholder="Describe the challenge goals, deliverables, and judging criteria..."
             multiline
             numberOfLines={4}
+            error={errors.description}
           />
         </View>
 
@@ -358,15 +420,23 @@ const CreateCompetitionScreen: React.FC<Props> = ({ route, navigation }) => {
           <FormInput
             label="Start Date (YYYY-MM-DDTHH:mm) *"
             value={startDateStr}
-            onChangeText={setStartDateStr}
+            onChangeText={(s) => {
+              setStartDateStr(s);
+              if (errors.dates) setErrors((prev) => ({ ...prev, dates: '' }));
+            }}
             placeholder="2026-10-10T10:00"
+            error={errors.dates}
           />
 
           <FormInput
             label="End Date (YYYY-MM-DDTHH:mm) *"
             value={endDateStr}
-            onChangeText={setEndDateStr}
+            onChangeText={(e) => {
+              setEndDateStr(e);
+              if (errors.dates) setErrors((prev) => ({ ...prev, dates: '' }));
+            }}
             placeholder="2026-10-17T18:00"
+            error={errors.dates}
           />
         </View>
 
@@ -379,18 +449,26 @@ const CreateCompetitionScreen: React.FC<Props> = ({ route, navigation }) => {
               <FormInput
                 label="Total Spots *"
                 value={totalSpots}
-                onChangeText={setTotalSpots}
+                onChangeText={(s) => {
+                  setTotalSpots(s);
+                  if (errors.totalSpots) setErrors((prev) => ({ ...prev, totalSpots: '' }));
+                }}
                 keyboardType="numeric"
                 placeholder="50"
+                error={errors.totalSpots}
               />
             </View>
             <View style={styles.halfInput}>
               <FormInput
                 label="Entry Fee (₹, 0 = Free)"
                 value={entryFee}
-                onChangeText={setEntryFee}
+                onChangeText={(f) => {
+                  setEntryFee(f);
+                  if (errors.entryFee) setErrors((prev) => ({ ...prev, entryFee: '' }));
+                }}
                 keyboardType="numeric"
                 placeholder="0"
+                error={errors.entryFee}
               />
             </View>
           </View>
@@ -441,6 +519,11 @@ const CreateCompetitionScreen: React.FC<Props> = ({ route, navigation }) => {
 
         {/* Submit Button */}
         <View style={styles.submitContainer}>
+          {submitError ? (
+            <View style={styles.errorBanner}>
+              <Text style={styles.errorBannerText}>⚠️ {submitError}</Text>
+            </View>
+          ) : null}
           <PrimaryButton
             label={
               editingId
@@ -643,6 +726,34 @@ const styles = StyleSheet.create({
   },
   submitContainer: {
     marginTop: SPACING.md,
+  },
+  autofillBtn: {
+    backgroundColor: 'rgba(99, 102, 241, 0.15)',
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.xs + 2,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: COLORS.primary,
+  },
+  autofillBtnText: {
+    color: COLORS.primaryLight,
+    fontWeight: '700',
+    fontSize: FONT_SIZE.caption,
+  },
+  errorBanner: {
+    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    borderWidth: 1,
+    borderColor: COLORS.error,
+    borderRadius: SPACING.sm,
+    padding: SPACING.md,
+    marginBottom: SPACING.md,
+  },
+  errorBannerText: {
+    color: '#FCA5A5',
+    fontSize: FONT_SIZE.caption,
+    fontWeight: '600',
+    textAlign: 'center',
+    lineHeight: 18,
   },
 });
 
